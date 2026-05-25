@@ -1,4 +1,4 @@
-# TES3MP Server Setup Guide
+# TES3MP Easy setup guide
 
 Collection of guides for setting up and managing a TES3MP servers, and installing the TES3MP client.
 
@@ -38,5 +38,6 @@ Collection of guides for setting up and managing a TES3MP servers, and installin
 ## Links
 
 - [TES3MP on GitHub](https://github.com/TES3MP/TES3MP)
+- [OpenMW on GitHub](https://github.com/OpenMW/openmw)
 
-Thanks to David Cernat for making TES3MP. My childhood dream come true!
+Thanks to David Cernat for making TES3MP, and to the OpenMW team for making Morrowind open-source and multiplatform. My childhood dream come true!
