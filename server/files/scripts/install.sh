@@ -621,28 +621,32 @@ configure_endpoints() {
     # nginx.conf — uncomment the required location blocks
     local nginx="$dest/nginx.conf"
 
+    # Helper: uncomment a block that starts with a marker comment
+    # Usage: uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_MODS"
+    uncomment_nginx_block() {
+        local file="$1"
+        local marker="$2"
+        # Remove the marker comment line
+        sed -i "/^    #${marker}#$/d" "$file"
+        # Uncomment the location block (4 lines starting with "    #")
+        sed -i '/^    #location \/get-/,/^    #}/s/^    #/    /' "$file"
+    }
+
     # Update rate limits in zone declarations
     sed -i "s/^limit_req_zone.*zone=mods:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=mods:10m rate=${MODS_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=world:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=world:10m rate=${WORLD_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=characters:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=characters:10m rate=${CHARACTERS_RATE}r\/m;/" "$nginx"
 
     if [[ "$ENABLE_MODS" == "yes" ]]; then
-        sed -i 's/#\(location \/get-mods\)/\1/' "$nginx"
-        sed -i 's/#\(    limit_req zone=mods burst=1 nodelay;\)/    limit_req zone=mods burst=1 nodelay;/' "$nginx"
-        sed -i 's/#\(    alias \/usr\/share\/nginx\/html\/mods\.zip;\)/    alias \/usr\/share\/nginx\/html\/mods.zip;/' "$nginx"
-        sed -i 's/#\(    default_type application\/zip;\)/    default_type application\/zip;/' "$nginx"
+        uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_MODS"
     fi
 
     if [[ "$ENABLE_WORLD" == "yes" ]]; then
-        sed -i 's/#\(location \/get-world\)/\1/' "$nginx"
-        sed -i 's/#\(    limit_req zone=world burst=1 nodelay;\)/    limit_req zone=world burst=1 nodelay;/' "$nginx"
-        sed -i 's/#\(    proxy_pass http:\/\/export:5000\/get-world;\)/    proxy_pass http:\/\/export:5000\/get-world;/' "$nginx"
+        uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_WORLD"
     fi
 
     if [[ "$ENABLE_CHARACTERS" == "yes" ]]; then
-        sed -i 's/#\(location \/get-characters\)/\1/' "$nginx"
-        sed -i 's/#\(    limit_req zone=characters burst=1 nodelay;\)/    limit_req zone=characters burst=1 nodelay;/' "$nginx"
-        sed -i 's/#\(    proxy_pass http:\/\/export:5000\/get-characters;\)/    proxy_pass http:\/\/export:5000\/get-characters;/' "$nginx"
+        uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_CHARACTERS"
     fi
 }
 
