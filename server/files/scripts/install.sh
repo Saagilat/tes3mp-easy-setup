@@ -713,9 +713,15 @@ build_and_start() {
     if [[ ! -f "$dest/data/requiredDataFiles.json" ]]; then
         cat > "$dest/data/requiredDataFiles.json" << 'EOF'
 [
-    "Morrowind.esm",
-    "Tribunal.esm",
-    "Bloodmoon.esm"
+  {
+    "Morrowind.esm": []
+  },
+  {
+    "Tribunal.esm": []
+  },
+  {
+    "Bloodmoon.esm": []
+  }
 ]
 EOF
     fi
