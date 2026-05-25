@@ -5,13 +5,13 @@
 The script will install Docker, download the server, configure it, and start the container.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/scripts/install.sh | bash
 ```
 
 Or download and run:
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/install.sh
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/scripts/install.sh
 sudo bash install.sh
 ```
 
@@ -124,27 +124,27 @@ cd /opt/tes3mp
 ```
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/Dockerfile
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker/tes3mp.dockerfile
 ```
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker-compose.yml
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker/docker-compose.yml
 ```
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/nginx.conf
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker/nginx.conf
 ```
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/export.dockerfile
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker/export.dockerfile
 ```
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/export_server.py
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker/export_server.py
 ```
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/update_mods.sh
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/scripts/update_mods.sh
 ```
 
 **Important**: mod files, configs, and scripts are all copied into the image at build time. After changing any file in `/opt/tes3mp/data/`, you must **rebuild the image**. Management commands (logs, stop, rebuild) are in [management.md](management.md).

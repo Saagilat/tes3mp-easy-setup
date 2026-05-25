@@ -3,10 +3,10 @@
 # install.sh — Interactive TES3MP Docker server installer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/scripts/install.sh | bash
 #
 # Or download and run:
-#   wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/install.sh
+#   wget https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/scripts/install.sh
 #   bash install.sh
 #
 
@@ -425,8 +425,11 @@ setup_files() {
     cd "$dest"
 
     info "Downloading Dockerfile and configs from Saagilat/tes3mp-guide..."
-    for f in Dockerfile docker-compose.yml nginx.conf export.dockerfile export_server.py update_mods.sh; do
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/$f" -O "$dest/$f"
+    for f in tes3mp.dockerfile docker-compose.yml nginx.conf export.dockerfile export_server.py; do
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/docker/$f" -O "$dest/$f"
+    done
+    for f in update_mods.sh; do
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-guide/master/server/files/scripts/$f" -O "$dest/$f"
     done
     chmod +x "$dest/update_mods.sh"
 

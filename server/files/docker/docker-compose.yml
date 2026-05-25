@@ -1,6 +1,8 @@
 services:
   tes3mp:
-    build: .
+    build:
+      context: .
+      dockerfile: tes3mp.dockerfile
     ports:
       - "25565:25565/udp"
     restart: unless-stopped
