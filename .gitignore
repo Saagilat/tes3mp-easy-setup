@@ -1,0 +1,14 @@
+# SSH keys
+tes3mp
+tes3mp.pub
+html
+sys.json
+
+# Large files — stored in GitHub Releases, not in repo
+*.tar
+*.zip
+
+# Experimental server/mods (not part of the instructions)
+example-mods/
+example-server/
+example/

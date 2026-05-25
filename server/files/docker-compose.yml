@@ -1,0 +1,35 @@
+services:
+  tes3mp:
+    build: .
+    ports:
+      - "25565:25565/udp"
+    restart: unless-stopped
+    volumes:
+      - tes3mp-characters:/tes3mp/players
+      - tes3mp-cells:/tes3mp/cells
+
+  # ⚠️ ALL ENDPOINTS DISABLED BY DEFAULT
+  # Uncomment the lines below (and the corresponding location blocks in nginx.conf)
+  # to enable. See server/install.md for implications.
+  #
+  #nginx:
+  #  image: nginx:alpine
+  #  ports:
+  #    - "8085:80"
+  #  volumes:
+  #    - ./data:/usr/share/nginx/html:ro
+  #    - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  #  restart: unless-stopped
+  #
+  #export:
+  #  build:
+  #    context: .
+  #    dockerfile: export.dockerfile
+  #  volumes:
+  #    - tes3mp-characters:/mnt/characters:ro
+  #    - tes3mp-cells:/mnt/cells:ro
+  #  restart: unless-stopped
+
+volumes:
+  tes3mp-characters:
+  tes3mp-cells:
