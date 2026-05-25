@@ -276,10 +276,11 @@ write_config() {
 
     # Force-rewrite the three fields that the installer asks about.
     # TES3MP's config uses these key names (not serverName/serverPassword/maxPlayers).
+    # Replace the entire matching line to avoid appending to the old value.
     sed -i \
-        -e "/^hostname[[:space:]]*=/{s//hostname = $SERVER_NAME/;:a;n;ba}" \
-        -e "/^password[[:space:]]*=/{s//password = $SERVER_PASSWORD/;:a;n;ba}" \
-        -e "/^maximumPlayers[[:space:]]*=/{s//maximumPlayers = $MAX_PLAYERS/;:a;n;ba}" \
+        -e "s/^hostname[[:space:]]*=.*/hostname = $SERVER_NAME/" \
+        -e "s/^password[[:space:]]*=.*/password = $SERVER_PASSWORD/" \
+        -e "s/^maximumPlayers[[:space:]]*=.*/maximumPlayers = $MAX_PLAYERS/" \
         "$cfg"
 
     # Append our marker so future runs know not to overwrite
