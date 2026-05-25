@@ -12,7 +12,8 @@ RUN rm -f \
     /tes3mp/tes3mp-server-default.cfg \
     /tes3mp/server/scripts/config.lua \
     /tes3mp/server/data/requiredDataFiles.json \
-    /tes3mp/server/data/banlist.json
+    /tes3mp/server/data/banlist.json \
+    && rm -rf /tes3mp/server/data/player /tes3mp/server/data/cell
 WORKDIR /tes3mp
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
