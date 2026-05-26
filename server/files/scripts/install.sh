@@ -148,47 +148,26 @@ gather_options() {
     TES3MP_PORT="${TES3MP_PORT:-25565}"
 
     echo ""
-    echo "--- Endpoints (HTTP port 8085) ---"
+    echo "--- Endpoints ---"
     echo ""
-    echo "Endpoints are URLs that players can use from their browser to"
-    echo "download mods, world state, or character data."
+    echo "The following optional HTTP endpoints give players access to"
+    echo "server data. Each one is disabled by default."
     echo ""
-
-    # /get-mods
-    echo "--- /get-mods ---"
-    echo "Lets players download all server mods as a single archive."
-    echo "Recommended to enable — safe and convenient."
-    echo ""
-    read -r -p "Enable /get-mods? [default: N]: " ENABLE_MODS </dev/tty
+    read -r -p "Enable /get-mods (mod pack — recommended)? [y/N]: " ENABLE_MODS </dev/tty
     ENABLE_MODS="${ENABLE_MODS:-n}"
     case "${ENABLE_MODS,,}" in
         y|yes) ENABLE_MODS="yes" ;;
         *)     ENABLE_MODS="no" ;;
     esac
 
-    # /get-world
-    echo ""
-    echo "--- /get-world ---"
-    echo "Serves the world state (all cells). Anyone who knows the server IP"
-    echo "can download the location of all items, buildings, and changes."
-    echo "Useful for co-op/RP servers. On PvP/competitive servers it may"
-    echo "spoil surprises."
-    echo ""
-    read -r -p "Enable /get-world? [default: N]: " ENABLE_WORLD </dev/tty
+    read -r -p "Enable /get-world (world state — co-op/RP)? [y/N]: " ENABLE_WORLD </dev/tty
     ENABLE_WORLD="${ENABLE_WORLD:-n}"
     case "${ENABLE_WORLD,,}" in
         y|yes) ENABLE_WORLD="yes" ;;
         *)     ENABLE_WORLD="no" ;;
     esac
 
-    # /get-characters
-    echo ""
-    echo "--- /get-characters ---"
-    echo "Serves ALL character data (inventory, skills, spells, quests)."
-    echo "Anyone who knows the server IP can download this data."
-    echo "On co-op/RP servers — transparency. On competitive servers — a risk."
-    echo ""
-    read -r -p "Enable /get-characters? [default: N]: " ENABLE_CHARACTERS </dev/tty
+    read -r -p "Enable /get-characters (player data — sensitive)? [y/N]: " ENABLE_CHARACTERS </dev/tty
     ENABLE_CHARACTERS="${ENABLE_CHARACTERS:-n}"
     case "${ENABLE_CHARACTERS,,}" in
         y|yes) ENABLE_CHARACTERS="yes" ;;

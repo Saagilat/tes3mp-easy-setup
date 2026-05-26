@@ -23,9 +23,9 @@ The script will ask:
 - **Max players** (default: `4`)
 - **TES3MP port (UDP)** (default: `25565`)
 ### HTTP endpoints
-- **Enable `/get-mods`** — lets players download all server mods as a single archive (default: no)
-- **Enable `/get-world`** — serves world state (all cells), useful for co-op/RP servers (default: no)
-- **Enable `/get-characters`** — serves all character data (inventory, skills, spells, quests) (default: no)
+- **Enable `/get-mods`** — mod pack for players (default: no)
+- **Enable `/get-world`** — world state (cells), suitable for co-op/RP (default: no)
+- **Enable `/get-characters`** — player data (inventory, skills, spells, quests) — sensitive (default: no)
 
 For each enabled endpoint you can set a **rate limit** in requests per minute (default: `5`, enter `0` to disable).
 
