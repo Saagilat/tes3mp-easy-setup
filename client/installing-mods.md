@@ -4,14 +4,57 @@ If the server provides a ready-made mod pack (as described in the [server admin 
 
 > **Prerequisites**: You must have TES3MP installed and configured.
 
-## 1. Download and extract mods
+## Quick setup (recommended)
+
+The `tes3mp-download-mods` script automates everything: it downloads the latest mods, replaces old ones, and configures `openmw.cfg`.
+
+### 1. Create the client config (one time)
+
+Create `~/.config/tes3mp/client.conf`:
+
+```ini
+CLIENT_DEFAULT=/path/to/tes3mp-client-default.cfg
+DATA_FILES=/path/to/OpenMW/Data Files
+OPENMW_CFG=/home/user/.config/openmw/openmw.cfg
+HTTP_PORT=8085
+```
+
+- `CLIENT_DEFAULT` — path to your `tes3mp-client-default.cfg` (the script reads the server address from it)
+- `DATA_FILES` — path to the game's `Data Files` folder (where `.esp`/`.esm`/`.omwaddon` files go)
+- `OPENMW_CFG` — path to `openmw.cfg` (typically `~/.config/openmw/openmw.cfg` on Linux)
+- `HTTP_PORT` — the HTTP endpoint port (default: `8085`, change if the admin uses a different one)
+
+> **Note**: The `DATA_FILES` path may contain spaces. In the config file, do **not** use quotes — just write the path as-is.
+
+### 2. Install mods
+
+```bash
+tes3mp-download-mods
+```
+
+The script will:
+1. Read the server address from `tes3mp-client-default.cfg`
+2. Download the mod pack from `http://<server>:<HTTP_PORT>/get-mods`
+3. Remove old mod files from `Data Files` (preserving `Morrowind.esm`, `Tribunal.esm`, `Bloodmoon.esm`)
+4. Extract the new mods into `Data Files`
+5. Add `include = mods.cfg` to `openmw.cfg` if not already present
+
+To update mods later, just run `tes3mp-download-mods` again.
+
+---
+
+## Manual installation
+
+If you prefer to do it manually:
+
+### 1. Download and extract mods
 
 The server may expose a download endpoint (typically `http://{SERVER_ADDRESS}:{PORT}/get-mods`) that serves a mod archive.  
 **Note:** The server administrator may disable this endpoint — if it doesn't work, ask the admin to enable it.
 
 Download the archive using your browser or any download tool, then extract its contents into the game's `Data Files` folder.
 
-## 2. Enable mods in OpenMW config
+### 2. Enable mods in OpenMW config
 
 Locate your `openmw.cfg` file — it is **not** in the game folder, but in your user profile:
 
@@ -28,10 +71,10 @@ include = mods.cfg
 
 > **Important**: Do **not** wrap filenames in quotes, even if they contain spaces. For example, `content=Dark Brotherhood Attacks Once - Delayed Attacks.ESP` is correct — **no** quotes around the path.
 
-## 3. How to update mods
+### 3. How to update mods
 
 Download and extract the archive again — the new files will overwrite the old ones. No changes to `openmw.cfg` are needed.
 
-## 4. How to remove the mod pack
+### 4. How to remove the mod pack
 
 Delete the extracted mod files, then open `openmw.cfg` and remove the `include = mods.cfg` line you added earlier.

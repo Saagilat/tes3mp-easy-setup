@@ -1,8 +1,52 @@
 # Adding mods to a TES3MP server
 
-Use the `update_mods.sh` script, which automates removing old mods, copying new ones, computing CRC32, generating `requiredDataFiles.json`, and rebuilding the Docker container.
+## Quick setup (recommended)
 
-## Option A: Remote server (via VPS)
+The `tes3mp-upload-mods` script automates syncing your local mods folder to a remote server and running `update_mods.sh` — all with a single command.
+
+### 1. Set up SSH access (one time)
+
+Add an alias for your server in `~/.ssh/config`:
+
+```
+Host tes3mp-server
+    HostName 1.2.3.4
+    Port 22
+    User root
+    IdentityFile ~/.ssh/tes3mp_key
+```
+
+### 2. Create the admin config (one time)
+
+Create `~/.config/tes3mp/admin.conf`:
+
+```ini
+SSH_HOST=tes3mp-server
+MODS_DIR=/home/user/tes3mp-mods
+```
+
+- `SSH_HOST` — the alias from `~/.ssh/config` (or `user@host` if you prefer)
+- `MODS_DIR` — absolute path to the folder where you keep your mod files
+
+### 3. Upload mods
+
+Put your `.esp`/`.esm`/`.omwaddon`/`.omwscripts`/`.omwgame` files in the `MODS_DIR` folder, then run:
+
+```bash
+tes3mp-upload-mods
+```
+
+The script will:
+1. Sync your mods to `/opt/tes3mp/mods/` on the server (removing files that no longer exist locally)
+2. Run `update_mods.sh` on the server, which copies them to `data/`, generates `requiredDataFiles.json`, packs `mods.zip`, and rebuilds the Docker container
+
+---
+
+## Alternative: Manual upload
+
+If you prefer not to set up the script, or need to manage mods on a local server:
+
+### Remote server (via VPS)
 
 > ⚠️ If other people also manage the server mods, always **pull first** to avoid overwriting their work.
 
@@ -20,7 +64,7 @@ Use the `update_mods.sh` script, which automates removing old mods, copying new 
 
 If you are the only person managing mods and don't need existing files — skip step 1.
 
-## Option B: Local server (same machine)
+### Local server (same machine)
 
 ```bash
 sudo cp -r . /opt/tes3mp/mods/
