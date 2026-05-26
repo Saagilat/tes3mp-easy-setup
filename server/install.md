@@ -5,13 +5,13 @@
 The script will install Docker, download the server, ask for configuration, and start the container.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/files/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/install.sh | bash
 ```
 
 Or download and run:
 
 ```bash
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/files/scripts/install.sh
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/install.sh
 sudo bash install.sh
 ```
 
