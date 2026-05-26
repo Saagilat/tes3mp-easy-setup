@@ -58,7 +58,56 @@ TES3MP saves player data in three ways:
 
 The auto-save interval (`config.autoSaveInterval` in `config.lua`) is your safety net — even if the server crashes, you lose at most 5 minutes of progress.
 
----
+
+## Staff ranks (права администратора)
+
+В TES3MP используется система рангов (staffRank) для разграничения прав. Ранг хранится в JSON-файле игрока и проверяется при выполнении команд.
+
+| Ранг | Название | Метод проверки | Описание |
+|------|----------|----------------|----------|
+| 0 | Обычный игрок | — | Нет особых прав |
+| 1 | Модератор | `IsModerator()` | Базовые команды: `/ban`, `/kick`, `/teleport`, `/resetcell` и др. |
+| 2 | Администратор | `IsAdmin()` | Команды управления сервером: `/addmoderator`, `/setrace`, `/load` и др. |
+| 3 | Владелец сервера | `IsServerOwner()` | Полный доступ: `/addadmin`, `/removeadmin` |
+
+### Команды для управления рангами
+
+Все команды выполняются в игровом чате. PID игрока можно узнать через `/players` или `/list`.
+
+| Команда | Требуется ранг | Действие |
+|---------|----------------|----------|
+| `/addadmin <pid>` | ServerOwner (3) | Назначить игрока администратором (staffRank = 2) |
+| `/removeadmin <pid>` | ServerOwner (3) | Понизить администратора до модератора (staffRank = 1) |
+| `/addmoderator <pid>` | Admin (2+) | Назначить игрока модератором (staffRank = 1) |
+| `/removemoderator <pid>` | Admin (2+) | Снять модератора (staffRank = 0) |
+
+> **Примечание:** ServerOwner (staffRank = 3) назначается автоматически первому зарегистрированному аккаунту на сервере. Через игровые команды назначить ServerOwner нельзя — только через прямое редактирование файла.
+
+### Ручное редактирование ранга
+
+Если нужно изменить ранг напрямую (например, назначить ServerOwner другому игроку или восстановить права):
+
+1. Остановите сервер:
+   ```bash
+   cd /opt/tes3mp && docker compose down
+   ```
+2. Откройте JSON-файл игрока:
+   ```bash
+   nano /opt/tes3mp/data/players/<accountName>.json
+   ```
+3. Найдите секцию `settings` и измените поле `staffRank`:
+   ```json
+   "settings": {
+       "staffRank": 2,
+       ...
+   }
+   ```
+   Значения: `0` — обычный игрок, `1` — модератор, `2` — администратор, `3` — владелец сервера.
+4. Сохраните файл и запустите сервер:
+   ```bash
+   cd /opt/tes3mp && docker compose up -d
+   ```
+
 
 ## Enabling endpoints: /get-mods, /get-world, /get-characters
 
