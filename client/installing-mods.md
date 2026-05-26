@@ -34,7 +34,7 @@ tes3mp-download-mods
 
 The script will:
 1. Read the server address from `tes3mp-client-default.cfg`
-2. Download the mod pack from `http://<server>:<HTTP_PORT>/get-mods`
+2. Download the mod pack from `http://<server>:8085/get-mods`
 3. Remove old mod files from `Data Files` (preserving `Morrowind.esm`, `Tribunal.esm`, `Bloodmoon.esm`)
 4. Extract the new mods into `Data Files`
 5. Add `include = mods.cfg` to `openmw.cfg` if not already present
@@ -49,7 +49,7 @@ If you prefer to do it manually:
 
 ### 1. Download and extract mods
 
-The server may expose a download endpoint (typically `http://{SERVER_ADDRESS}:{PORT}/get-mods`) that serves a mod archive.  
+The server may expose a download endpoint (typically `http://{SERVER_ADDRESS}:8085/get-mods`) that serves a mod archive.  
 **Note:** The server administrator may disable this endpoint — if it doesn't work, ask the admin to enable it.
 
 Download the archive using your browser or any download tool, then extract its contents into the game's `Data Files` folder.

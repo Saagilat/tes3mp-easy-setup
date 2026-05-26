@@ -22,8 +22,6 @@ The script will ask:
 - **Server password** (can be left empty)
 - **Max players** (default: `4`)
 - **TES3MP port (UDP)** (default: `25565`)
-- **HTTP endpoint port (TCP)** (default: `8085`)
-
 ### HTTP endpoints
 - **Enable `/get-mods`** — lets players download all server mods as a single archive (default: no)
 - **Enable `/get-world`** — serves world state (all cells), useful for co-op/RP servers (default: no)
