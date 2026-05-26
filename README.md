@@ -2,10 +2,16 @@
 
 Guides and scripts for setting up and managing TES3MP servers and installing the TES3MP client.
 
-## Who are you?
+## Quickstart
 
-- **Player** — [client/](client/README.md): install TES3MP, mods, localization.
-- **Server admin** — [admin/](admin/README.md): Docker setup, management, configuration, mod uploads.
+### 🎮 Player
+Follow the [client installation guide](client/README.md) for your OS.
+
+### 🖥️ Server admin
+```bash
+curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/install.sh | bash
+```
+Full setup docs: [admin/install.md](admin/install.md)
 
 ---
 
