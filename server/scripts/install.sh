@@ -409,8 +409,7 @@ setup_files() {
     for f in update_mods.sh; do
         wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/$f" -O "$dest/$f"
     done
-    wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/admin/linux/mods/upload" -O "$dest/tes3mp-upload-mods"
-    chmod +x "$dest/update_mods.sh" "$dest/tes3mp-upload-mods"
+    chmod +x "$dest/update_mods.sh"
 
     # Download management reference
     wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/admin/management.md" -O "$dest/management.md"
