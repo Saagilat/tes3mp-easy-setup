@@ -1,6 +1,12 @@
 # Client
 
-This directory contains documentation for players setting up TES3MP.
+Guides and scripts for players setting up TES3MP.
+
+## Installation
+
+| OS | Guide |
+|----|-------|
+| 🐧 Linux | [Steam Proton setup](linux_proton/install.md) |
 
 ## Documentation
 
