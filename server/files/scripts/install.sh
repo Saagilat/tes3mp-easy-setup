@@ -151,7 +151,8 @@ gather_options() {
     echo "--- Endpoints ---"
     echo ""
     echo "The following optional HTTP endpoints give players access to"
-    echo "server data. Each one is disabled by default."
+    echo "server data. The HTTP port (8085) is only opened if at least"
+    echo "one endpoint is enabled. Each endpoint is disabled by default."
     echo ""
     read -r -p "Enable /get-mods (mod pack — recommended)? [y/N]: " ENABLE_MODS </dev/tty
     ENABLE_MODS="${ENABLE_MODS:-n}"

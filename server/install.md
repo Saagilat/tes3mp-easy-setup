@@ -23,6 +23,7 @@ The script will ask:
 - **Max players** (default: `4`)
 - **TES3MP port (UDP)** (default: `25565`)
 ### HTTP endpoints
+HTTP port 8085 is only opened if at least one endpoint is enabled.
 - **Enable `/get-mods`** — mod pack for players (default: no)
 - **Enable `/get-world`** — world state (cells), suitable for co-op/RP (default: no)
 - **Enable `/get-characters`** — player data (inventory, skills, spells, quests) — sensitive (default: no)
