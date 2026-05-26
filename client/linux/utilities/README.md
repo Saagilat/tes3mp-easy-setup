@@ -9,17 +9,10 @@
 
 ## Как настроить
 
-### 1. Скопируйте конфиг
+### 1. Отредактируйте конфиг
 
 ```bash
-mkdir -p ~/.config/tes3mp
-cp client/linux/utilities/tes3mp-mods-download.conf ~/.config/tes3mp/
-```
-
-### 2. Отредактируйте конфиг
-
-```bash
-nano ~/.config/tes3mp/tes3mp-mods-download.conf
+nano client/linux/utilities/tes3mp-mods-download.conf
 ```
 
 Укажите правильные пути для вашей системы:

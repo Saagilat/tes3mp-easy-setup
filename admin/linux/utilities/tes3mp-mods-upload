@@ -2,11 +2,11 @@
 #
 # tes3mp-upload-mods — Upload mods to a remote TES3MP server
 #
-# This script reads the admin configuration from ~/.config/tes3mp/tes3mp-mods-upload.conf,
+# This script reads the configuration from tes3mp-mods-upload.conf (next to this script),
 # syncs the local mods directory to the server, and runs update_mods.sh.
 #
-# Configuration (~/.config/tes3mp/tes3mp-mods-upload.conf):
-# Copy from: https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/admin/linux/mods/tes3mp-mods-upload.conf
+# Configuration:
+#   $(dirname "$0")/tes3mp-mods-upload.conf
 #
 # Usage:
 #   tes3mp-upload-mods
@@ -15,7 +15,8 @@
 
 set -euo pipefail
 
-CONFIG_FILE="$HOME/.config/tes3mp/tes3mp-mods-upload.conf"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONFIG_FILE="$SCRIPT_DIR/tes3mp-mods-upload.conf"
 
 # Colors
 RED='\033[0;31m'
@@ -30,12 +31,8 @@ ok()   { echo -e "${GREEN}[OK]${NC}   $*"; }
 if [ ! -f "$CONFIG_FILE" ]; then
     err "Config file not found: $CONFIG_FILE"
     echo ""
-    echo "Download the template:"
-    echo "  mkdir -p ~/.config/tes3mp"
-    echo "  wget -O $CONFIG_FILE \\"
-    echo "    https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/admin/linux/mods/tes3mp-mods-upload.conf"
-    echo ""
-    echo "Then edit it: nano $CONFIG_FILE"
+    echo "Edit the config template:"
+    echo "  nano $CONFIG_FILE"
     exit 1
 fi
 

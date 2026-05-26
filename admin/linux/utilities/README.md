@@ -9,20 +9,13 @@
 
 ## Как настроить
 
-### 1. Скопируйте конфиг
+### 1. Отредактируйте конфиг
 
 ```bash
-mkdir -p ~/.config/tes3mp
-cp admin/linux/utilities/tes3mp-mods-upload.conf ~/.config/tes3mp/
+nano admin/linux/utilities/tes3mp-mods-upload.conf
 ```
 
-### 2. Отредактируйте конфиг
-
-```bash
-nano ~/.config/tes3mp/tes3mp-mods-upload.conf
-```
-
-### 3. Настройте SSH alias (чтобы работало `ssh tes3mp-server`)
+### 2. Настройте SSH alias (чтобы работало `ssh tes3mp-server`)
 
 Добавьте в `~/.ssh/config`:
 
@@ -41,7 +34,7 @@ ssh-keygen -t ed25519 -C "tes3mp-admin"   # создать ключ
 ssh-copy-id tes3mp-server                   # скопировать ключ на сервер
 ```
 
-### 4. Запустите скрипт
+### 3. Запустите скрипт
 
 ```bash
 ./admin/linux/utilities/tes3mp-mods-upload
