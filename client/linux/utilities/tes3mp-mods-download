@@ -4,7 +4,7 @@
 #
 # This script reads the configuration from tes3mp-mods-download.conf (next to this script),
 # downloads the latest mod pack from the server, replaces old mods in Data Files,
-# and ensures openmw.cfg includes the mods config.
+# and updates openmw.cfg with the installed mods.
 #
 # Configuration:
 #   $(dirname "$0")/tes3mp-mods-download.conf
@@ -195,24 +195,55 @@ ok "Extracted"
 rm -f "$TMP_ZIP"
 ok "Archive deleted"
 
-# --- Step 4: Ensure openmw.cfg includes mods.cfg ---
+# --- Step 4: Update openmw.cfg with installed mods ---
 echo ""
-echo "[4/4] Checking openmw.cfg..."
-INCLUDE_LINE="include = mods.cfg"
+echo "[4/4] Updating openmw.cfg with installed mods..."
+MOD_MARKER="# tes3mp-mod"
 
 if [ ! -f "$OPENMW_CFG" ]; then
     warn "openmw.cfg not found at $OPENMW_CFG — creating"
-    echo "$INCLUDE_LINE" > "$OPENMW_CFG"
-    ok "Created $OPENMW_CFG with $INCLUDE_LINE"
-else
-    if grep -Fxq "$INCLUDE_LINE" "$OPENMW_CFG" 2>/dev/null; then
-        ok "openmw.cfg already includes mods.cfg"
-    else
-        echo "" >> "$OPENMW_CFG"
-        echo "$INCLUDE_LINE" >> "$OPENMW_CFG"
-        ok "Added '$INCLUDE_LINE' to openmw.cfg"
-    fi
+    touch "$OPENMW_CFG"
 fi
+
+# Remove old mod entries previously added by this script
+sed -i "/${MOD_MARKER}/d" "$OPENMW_CFG"
+
+# Add new mod entries for all extracted .esp/.esm/.omwaddon/.omwscripts/.omwgame files
+# (skip original Morrowind files)
+added=0
+for pattern in "*.esp" "*.ESP" "*.esm" "*.ESM" \
+               "*.omwaddon" "*.OMWADDON" \
+               "*.omwscripts" "*.OMWSCRIPTS" \
+               "*.omwgame" "*.OMWGAME"; do
+    for file in "$DATA_FILES"/$pattern; do
+        [ -f "$file" ] || continue
+        basename="$(basename "$file")"
+
+        # Skip original files
+        skip=0
+        for orig in "${ORIGINAL_FILES[@]}"; do
+            if [ "$basename" = "$orig" ]; then
+                skip=1
+                break
+            fi
+        done
+
+        if [ "$skip" -eq 1 ]; then
+            continue
+        fi
+
+        # Add content= entry — OpenMW resolves the file in Data Files directories
+        echo "content=$basename $MOD_MARKER" >> "$OPENMW_CFG"
+        echo "  - Added to openmw.cfg: $basename"
+        ((added++)) || true
+    done
+done
+
+if [ "$added" -eq 0 ]; then
+    echo "  (no mod entries added)"
+fi
+
+ok "openmw.cfg updated with $added mod entries"
 
 echo ""
 echo "=== Done! ==="
