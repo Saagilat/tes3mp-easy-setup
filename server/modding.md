@@ -8,7 +8,7 @@ The `tes3mp-upload-mods` script automates syncing your local mods folder to a re
 
 ```bash
 # Download
-wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/tools/linux/admin/tes3mp-upload-mods
+wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/tools/linux/modding/tes3mp-upload-mods
 
 # Make executable and install
 chmod +x tes3mp-upload-mods
@@ -36,7 +36,7 @@ Create `~/.config/tes3mp/admin.conf`:
 ```bash
 mkdir -p ~/.config/tes3mp
 wget -O ~/.config/tes3mp/admin.conf \
-  https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/tools/linux/admin/admin.conf
+  https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/tools/linux/modding/admin.conf
 ```
 
 Then edit it with your values:

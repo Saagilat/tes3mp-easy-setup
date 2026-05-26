@@ -10,11 +10,11 @@ The `tes3mp-download-mods` script automates everything: it downloads the latest 
 
 | Platform | Script |
 |----------|--------|
-| 🐧 Linux | [`tes3mp-download-mods`](../tools/linux/player/tes3mp-download-mods) |
+| 🐧 Linux | [`tes3mp-download-mods`](../tools/linux/modding/tes3mp-download-mods) |
 
 ### 1. Get the script
 
-Download the [`tools/linux/player/`](../tools/linux/player/) folder from the repository. It contains the script and a config template.
+Download the [`tools/linux/modding/`](../tools/linux/modding/) folder from the repository. It contains the script and a config template.
 
 ### 2. Edit the config
 

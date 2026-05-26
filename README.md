@@ -14,7 +14,7 @@ Collection of guides and scripts for setting up and managing TES3MP servers with
 
 ### Configuration
 
-- [Mod auto-installer script (tes3mp-download-mods)](tools/linux/player/tes3mp-download-mods)
+- [Mod auto-installer script (tes3mp-download-mods)](tools/linux/modding/tes3mp-download-mods)
 
 - [Installing mods from the server](client/installing-mods.md)
 
@@ -23,7 +23,7 @@ Collection of guides and scripts for setting up and managing TES3MP servers with
 <details>
 <summary>🌐 Localization</summary>
 
-- [Русская локализация](tools/linux/player/localization/russian/README.md)
+- [Русская локализация](tools/linux/localization/russian/README.md)
 
 </details>
 
@@ -34,7 +34,7 @@ Collection of guides and scripts for setting up and managing TES3MP servers with
 ### 🐧 Linux
 
 - [Server installation](server/install.md)
-- [Mod upload script (tes3mp-upload-mods)](tools/linux/admin/tes3mp-upload-mods)
+- [Mod upload script (tes3mp-upload-mods)](tools/linux/modding/tes3mp-upload-mods)
 - [Server modding (mods and Lua plugins)](server/modding.md)
 - [Server management](server/management.md)
 
