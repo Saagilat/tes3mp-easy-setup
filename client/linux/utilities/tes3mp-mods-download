@@ -198,18 +198,25 @@ ok "Archive deleted"
 # --- Step 4: Update openmw.cfg with installed mods ---
 echo ""
 echo "[4/4] Updating openmw.cfg with installed mods..."
-MOD_MARKER="# tes3mp-mod"
+MOD_BEGIN="# tes3mp-mod-begin"
+MOD_END="# tes3mp-mod-end"
 
 if [ ! -f "$OPENMW_CFG" ]; then
     warn "openmw.cfg not found at $OPENMW_CFG — creating"
     touch "$OPENMW_CFG"
 fi
 
-# Remove old mod entries previously added by this script
-sed -i "/${MOD_MARKER}/d" "$OPENMW_CFG"
+# Remove old mod entries previously added by this script (between markers)
+if grep -qF "$MOD_BEGIN" "$OPENMW_CFG" 2>/dev/null; then
+    sed -i "/${MOD_BEGIN}/,/${MOD_END}/d" "$OPENMW_CFG"
+fi
 
-# Add new mod entries for all extracted .esp/.esm/.omwaddon/.omwscripts/.omwgame files
+# Remove any orphaned trailing blank lines
+sed -i '$ { /^$/d; }' "$OPENMW_CFG"
+
+# Add markers and new mod entries
 # (skip original Morrowind files)
+echo "$MOD_BEGIN" >> "$OPENMW_CFG"
 added=0
 for pattern in "*.esp" "*.ESP" "*.esm" "*.ESM" \
                "*.omwaddon" "*.OMWADDON" \
@@ -232,12 +239,13 @@ for pattern in "*.esp" "*.ESP" "*.esm" "*.ESM" \
             continue
         fi
 
-        # Add content= entry — OpenMW resolves the file in Data Files directories
-        echo "content=$basename $MOD_MARKER" >> "$OPENMW_CFG"
+        # Add clean content= entry (no inline comment — OpenMW doesn't support it)
+        echo "content=$basename" >> "$OPENMW_CFG"
         echo "  - Added to openmw.cfg: $basename"
         ((added++)) || true
     done
 done
+echo "$MOD_END" >> "$OPENMW_CFG"
 
 if [ "$added" -eq 0 ]; then
     echo "  (no mod entries added)"
