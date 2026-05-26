@@ -103,5 +103,5 @@ Reverse the steps above and rebuild.
   - `http://<server-IP>:8085/get-world`
   - `http://<server-IP>:8085/get-characters`
 
-See [server_settings.md](server_settings.md) for the full config.lua reference.
+See [tes3mp_settings.md](tes3mp_settings.md) for the full config.lua reference.
 
