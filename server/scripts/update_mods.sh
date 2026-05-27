@@ -176,18 +176,28 @@ if [ ! -f "$SERVER_CORE_LUA" ]; then
     echo "  Add the following to your serverCore.lua manually:"
     echo "    customScripts = dofile(\"customScripts.lua\")"
 else
-    # Check if already patched
-    if grep -q "dofile(\"customScripts.lua\")" "$SERVER_CORE_LUA" 2>/dev/null; then
-        echo "  serverCore.lua already patched — skipping"
-    else
-        # Replace customScripts = {} with dofile version
-        if grep -q "customScripts\s*=" "$SERVER_CORE_LUA" 2>/dev/null; then
-            sed -i 's/customScripts\s*=\s*{.*}/customScripts = dofile("customScripts.lua")/' "$SERVER_CORE_LUA"
-            echo "  Patched: replaced customScripts = {...} with dofile(\"customScripts.lua\")"
+    if [ "$script_copied" -eq 0 ]; then
+        echo "  No custom scripts found — restoring default customScripts = {} if needed"
+        if grep -q "dofile" "$SERVER_CORE_LUA" 2>/dev/null; then
+            sed -i 's/customScripts\s*=\s*dofile.*/customScripts = {}/' "$SERVER_CORE_LUA"
+            echo "  Restored: customScripts = {}"
         else
-            # If no customScripts line exists, prepend it at the beginning
-            sed -i '1i customScripts = dofile("customScripts.lua")' "$SERVER_CORE_LUA"
-            echo "  Patched: prepended customScripts = dofile(\"customScripts.lua\")"
+            echo "  No changes needed"
+        fi
+    else
+        # Check if already patched
+        if grep -q "dofile(\"server/scripts/customScripts.lua\")" "$SERVER_CORE_LUA" 2>/dev/null; then
+            echo "  serverCore.lua already patched — skipping"
+        else
+            # Replace customScripts = {} with dofile version
+            if grep -q "customScripts\s*=" "$SERVER_CORE_LUA" 2>/dev/null; then
+                sed -i 's|customScripts\s*=\s*{.*}|customScripts = dofile("server/scripts/customScripts.lua")|' "$SERVER_CORE_LUA"
+                echo "  Patched: replaced customScripts = {...} with dofile(\"server/scripts/customScripts.lua\")"
+            else
+                # If no customScripts line exists, prepend it at the beginning
+                sed -i '1i customScripts = dofile("server/scripts/customScripts.lua")' "$SERVER_CORE_LUA"
+                echo "  Patched: prepended customScripts = dofile(\"server/scripts/customScripts.lua\")"
+            fi
         fi
     fi
 fi
