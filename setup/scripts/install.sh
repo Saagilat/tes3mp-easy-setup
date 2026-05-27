@@ -3,10 +3,10 @@
 # install.sh — Interactive TES3MP Docker server installer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/scripts/install.sh | bash
 #
 # Or download and run:
-#   wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/install.sh
+#   wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/scripts/install.sh
 #   bash install.sh
 #
 
