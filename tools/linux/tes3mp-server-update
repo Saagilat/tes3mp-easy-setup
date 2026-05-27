@@ -1,22 +1,22 @@
 #!/bin/bash
 #
-# tes3mp-server-sync — Sync server plugins and scripts to a remote TES3MP server
+# tes3mp-server-update — Sync server plugins and scripts to a remote TES3MP server
 #
-# This script reads the configuration from tes3mp-server-sync.conf (next to this script),
+# This script reads the configuration from tes3mp-server-update.conf (next to this script),
 # syncs the local plugins and server scripts to the server, and runs update_mods.sh.
 #
 # Configuration:
-#   $(dirname "$0")/tes3mp-server-sync.conf
+#   $(dirname "$0")/tes3mp-server-update.conf
 #
 # Usage:
-#   tes3mp-server-sync
+#   tes3mp-server-update
 #
 # Dependencies: bash, rsync, ssh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CONFIG_FILE="$SCRIPT_DIR/tes3mp-server-sync.conf"
+CONFIG_FILE="$SCRIPT_DIR/tes3mp-server-update.conf"
 
 # Colors
 RED='\033[0;31m'
