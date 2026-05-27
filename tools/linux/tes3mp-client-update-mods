@@ -114,7 +114,7 @@ if [ -z "$SERVER_HOST" ]; then
     exit 1
 fi
 
-DOWNLOAD_URL="http://${SERVER_HOST}:${HTTP_PORT}/get-plugins"
+DOWNLOAD_URL="http://${SERVER_HOST}:${HTTP_PORT}/get-mods"
 
 echo "=== TES3MP Client Sync ==="
 echo "  Server:   $SERVER_HOST:$HTTP_PORT"
@@ -123,16 +123,16 @@ echo "  openmw:   $OPENMW_CFG"
 echo ""
 
 # --- Step 1: Download plugins ---
-echo "[1/4] Downloading plugins from $DOWNLOAD_URL ..."
+echo "[1/4] Downloading mods from $DOWNLOAD_URL ..."
 
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-TMP_ZIP="$TMP_DIR/plugins.zip"
+TMP_ZIP="$TMP_DIR/mods.zip"
 
 if ! curl -fsSL --max-time 30 "$DOWNLOAD_URL" -o "$TMP_ZIP"; then
     err "Failed to download plugins from $DOWNLOAD_URL"
-    err "Make sure the server is running and the /get-plugins endpoint is enabled."
+    err "Make sure the server is running and the /get-mods endpoint is enabled."
     exit 1
 fi
 

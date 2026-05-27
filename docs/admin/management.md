@@ -141,8 +141,7 @@ The script:
   (removes files that no longer exist)
 * Generates `server/scripts/customScripts.lua` with `require()` for each script
 * Computes CRC32 and generates `server/data/requiredDataFiles.json`
-* Creates `plugins.zip` for the `/get-plugins` endpoint
-* Creates `server-scripts.zip` for the `/get-server-scripts` endpoint
+* Creates `mods.zip` for the `/get-mods` endpoint (includes plugins, client scripts, and `requiredDataFiles.json`)
 * Restarts the Docker container automatically
 
 ## Enabling HTTP endpoints
@@ -154,7 +153,7 @@ All endpoints are disabled by default. See [tes3mp_settings.md](tes3mp_settings.
 
 | Endpoint | Description | File |
 |----------|-------------|------|
-| `/get-plugins` | Download all server plugins (`.esp`/`.esm`/`.omwaddon`) | `plugins.zip` |
+| `/get-mods` | Download all server mods and client scripts | `mods.zip` |
 | `/get-server-scripts` | Download all custom Lua server scripts | `server-scripts.zip` |
 | `/get-world` | Download world state (all cell JSON files) | `world_state.tar.gz` |
 | `/get-characters` | Download all character data | `characters.tar.gz` |
@@ -173,7 +172,7 @@ All endpoints are disabled by default. See [tes3mp_settings.md](tes3mp_settings.
 
 - Rate limit: each endpoint has its own configurable limit (default: **5 requests per minute** per IP).
 - When enabled, endpoints are available at:
-  - `http://<server-IP>:8085/get-plugins`
+  - `http://<server-IP>:8085/get-mods`
   - `http://<server-IP>:8085/get-server-scripts`
   - `http://<server-IP>:8085/get-world`
   - `http://<server-IP>:8085/get-characters`

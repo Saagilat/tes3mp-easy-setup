@@ -172,11 +172,11 @@ gather_options() {
     echo "server data. The HTTP port (8085) is only opened if at least"
     echo "one endpoint is enabled. Each endpoint is disabled by default."
     echo ""
-    read -r -p "Enable /get-plugins? [y/N]: " ENABLE_PLUGINS </dev/tty
-    ENABLE_PLUGINS="${ENABLE_PLUGINS:-n}"
-    case "${ENABLE_PLUGINS,,}" in
-        y|yes) ENABLE_PLUGINS="yes" ;;
-        *)     ENABLE_PLUGINS="no" ;;
+    read -r -p "Enable /get-mods? [y/N]: " ENABLE_MODS </dev/tty
+    ENABLE_MODS="${ENABLE_MODS:-n}"
+    case "${ENABLE_MODS,,}" in
+        y|yes) ENABLE_MODS="yes" ;;
+        *)     ENABLE_MODS="no" ;;
     esac
 
     read -r -p "Enable /get-server-scripts? [y/N]: " ENABLE_SERVER_SCRIPTS </dev/tty
@@ -207,10 +207,10 @@ gather_options() {
     echo "Default: 5. Enter 0 to disable rate limiting."
     echo ""
 
-    PLUGINS_RATE="5"
-    if [[ "$ENABLE_PLUGINS" == "yes" ]]; then
-        read -r -p "  /get-plugins rate limit (req/min) [default: 5]: " input </dev/tty
-        PLUGINS_RATE="${input:-5}"
+    MODS_RATE="5"
+    if [[ "$ENABLE_MODS" == "yes" ]]; then
+        read -r -p "  /get-mods rate limit (req/min) [default: 5]: " input </dev/tty
+        MODS_RATE="${input:-5}"
     fi
 
     SERVER_SCRIPTS_RATE="5"
@@ -618,7 +618,7 @@ configure_endpoints() {
     sed -i "s/\"25565:25565\/udp\"/\"$TES3MP_PORT:25565\/udp\"/" "$compose"
 
     # Uncomment nginx service if at least one endpoint is enabled
-    if [[ "$ENABLE_PLUGINS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
         sed -i 's/#\(nginx:\)/\1/' "$compose"
         sed -i 's/#\(  image: nginx:alpine\)/  image: nginx:alpine/' "$compose"
         sed -i 's/#\(  ports:\)/  ports:/' "$compose"
@@ -647,7 +647,7 @@ configure_endpoints() {
     local nginx="$dest/nginx.conf"
 
     # Helper: uncomment a block that starts with a marker comment
-    # Usage: uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_PLUGINS"
+    # Usage: uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_MODS"
     uncomment_nginx_block() {
         local file="$1"
         local marker="$2"
@@ -658,13 +658,13 @@ configure_endpoints() {
     }
 
     # Update rate limits in zone declarations
-    sed -i "s/^limit_req_zone.*zone=plugins:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=plugins:10m rate=${PLUGINS_RATE}r\/m;/" "$nginx"
+    sed -i "s/^limit_req_zone.*zone=mods:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=mods:10m rate=${MODS_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=server-scripts:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=server-scripts:10m rate=${SERVER_SCRIPTS_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=world:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=world:10m rate=${WORLD_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=characters:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=characters:10m rate=${CHARACTERS_RATE}r\/m;/" "$nginx"
 
-    if [[ "$ENABLE_PLUGINS" == "yes" ]]; then
-        uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_PLUGINS"
+    if [[ "$ENABLE_MODS" == "yes" ]]; then
+        uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_MODS"
     fi
 
     if [[ "$ENABLE_SERVER_SCRIPTS" == "yes" ]]; then
@@ -712,13 +712,13 @@ configure_firewall() {
     case "$fw" in
         ufw)
             ufw allow "$TES3MP_PORT/udp" comment "TES3MP"
-            if [[ "$ENABLE_PLUGINS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+            if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
                 ufw allow "8085/tcp" comment "TES3MP HTTP endpoints"
             fi
             ;;
         firewall-cmd)
             firewall-cmd --permanent --add-port="$TES3MP_PORT/udp"
-            if [[ "$ENABLE_PLUGINS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+            if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
                 firewall-cmd --permanent --add-port="8085/tcp"
             fi
             firewall-cmd --reload
@@ -761,12 +761,12 @@ build_and_start() {
     echo "  TES3MP port (UDP):  $TES3MP_PORT"
     echo ""
     echo "  Endpoints:"
-    echo "    /get-plugins:        $ENABLE_PLUGINS"
+    echo "    /get-mods:           $ENABLE_MODS"
     echo "    /get-server-scripts: $ENABLE_SERVER_SCRIPTS"
     echo "    /get-world:          $ENABLE_WORLD"
     echo "    /get-characters:     $ENABLE_CHARACTERS"
     echo ""
-    if [[ "$ENABLE_PLUGINS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
         echo "  HTTP port (endpoints): 8085"
     fi
     echo ""
