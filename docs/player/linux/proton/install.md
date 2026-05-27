@@ -48,15 +48,6 @@ rm -rf ~/.steam/steam/steamapps/compatdata/{TES3MP_ID}/pfx
 ln -s ~/.steam/steam/steamapps/compatdata/{WIZARD_ID}/pfx ~/.steam/steam/steamapps/compatdata/{TES3MP_ID}/pfx
 ```
 
-<details>
-<summary>If you add other OpenMW utilities</summary>
-For `openmw-cs.exe` and other OpenMW utilities repeat step 3:
-
-- Run once, find its compatdata ID
-- Delete `pfx`
-- Symlink to the wizard's `pfx`
-</details>
-
 - Create a symlink from the prefix to your Morrowind Data Files, so OpenMW
   uses the same plugin files that `tes3mp-client-update` writes to:
 
@@ -73,6 +64,15 @@ OpenMW checks for plugins both in `data=` paths from `openmw.cfg` and in the
 If `openmw-cs` creates it later with different files, TES3MP will refuse to
 connect due to CRC mismatch. A symlink prevents this by making both locations
 point to the same directory.
+</details>
+
+<details>
+<summary>If you add other OpenMW utilities</summary>
+For `openmw-cs.exe` and other OpenMW utilities repeat step 3:
+
+- Run once, find its compatdata ID
+- Delete `pfx`
+- Symlink to the wizard's `pfx`
 </details>
 
 ## 4. Configure connection to the server
