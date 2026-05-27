@@ -8,6 +8,13 @@ Guides and scripts for players setting up TES3MP.
 |----|-------|
 | 🐧 Linux | [Steam Proton setup](linux/proton/install.md) |
 
+### Russian localization
+
+For Russian-speaking players, a separate tool installs the Russian localization (fonts, textures, UI, voiceovers):
+
+- [`tools/linux/localization/russian/install.sh`](../../tools/linux/localization/russian/install.sh)
+- [`tools/linux/localization/russian/README.md`](../../tools/linux/localization/russian/README.md)
+
 ## Updating plugins from the server
 
 To auto-install server plugins on your client, use `tes3mp-client-update`:
