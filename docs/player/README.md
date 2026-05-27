@@ -6,7 +6,7 @@ Guides and scripts for players setting up TES3MP.
 
 | OS | Guide |
 |----|-------|
-| 🐧 Linux | [Steam Proton setup](../../client/linux/proton/install.md) |
+| 🐧 Linux | [Steam Proton setup](linux/proton/install.md) |
 
 > **Note:** The client installation guides are being restructured.  
 > For now, see the `client/` directory in the repository history.
