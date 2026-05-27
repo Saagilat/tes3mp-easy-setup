@@ -436,15 +436,15 @@ setup_files() {
 
     info "Downloading Dockerfile and configs from Saagilat/tes3mp-easy-setup..."
     for f in tes3mp.dockerfile docker-compose.yml nginx.conf export.dockerfile export_server.sh; do
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/docker/$f" -O "$dest/$f"
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/docker/$f" -O "$dest/$f"
     done
     for f in update_mods.sh; do
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server/scripts/$f" -O "$dest/$f"
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/scripts/$f" -O "$dest/$f"
     done
     chmod +x "$dest/update_mods.sh"
 
     # Download management reference
-    wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/admin/management.md" -O "$dest/management.md"
+    wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/docs/admin/management.md" -O "$dest/management.md"
 
     # Download TES3MP server binary
     local TES3MP_URL="https://github.com/TES3MP/TES3MP/releases/download/tes3mp-0.8.1/tes3mp-server-GNU+Linux-x86_64-release-0.8.1-68954091c5-6da3fdea59.tar.gz"
@@ -709,7 +709,7 @@ build_and_start() {
     cd "$dest"
 
     info "Building Docker image (this may take a minute)..."
-    docker compose up -d --build 2>&1 || {
+    docker compose -f "$dest/docker-compose.yml" up -d --build 2>&1 || {
         err "Failed to start the container. Check the output above."
         exit 1
     }
