@@ -119,10 +119,10 @@ If you develop plugins and scripts on another machine, use `tes3mp-server-update
 
 ```bash
 # Edit the config
-nano tools/tes3mp-server-update.conf
+nano tools/linux/tes3mp-server-update.conf
 
 # Sync everything to the server
-bash tools/tes3mp-server-update
+bash tools/linux/tes3mp-server-update
 ```
 
 ### update_mods.sh (on the server)

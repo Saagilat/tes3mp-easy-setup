@@ -17,17 +17,17 @@ To auto-install server plugins on your client, use `tes3mp-client-update`:
 
 | File | Description |
 |------|-------------|
-| [`tes3mp-client-update`](../../tools/tes3mp-client-update) | Download script |
-| [`tes3mp-client-update.conf`](../../tools/tes3mp-client-update.conf) | Configuration template |
+| [`tes3mp-client-update`](../../tools/linux/tes3mp-client-update) | Download script |
+| [`tes3mp-client-update.conf`](../../tools/linux/tes3mp-client-update.conf) | Configuration template |
 
 ### Usage
 
 ```bash
 # Edit the config with your paths
-nano tools/tes3mp-client-update.conf
+nano tools/linux/tes3mp-client-update.conf
 
 # Run the update
-bash tools/tes3mp-client-update
+bash tools/linux/tes3mp-client-update
 ```
 
 ## UI customization

@@ -3,10 +3,10 @@
 # install.sh — Interactive TES3MP Docker server installer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/scripts/install.sh | bash
 #
 # Or download and run:
-#   wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/scripts/install.sh
+#   wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/scripts/install.sh
 #   bash install.sh
 #
 
@@ -436,10 +436,10 @@ setup_files() {
 
     info "Downloading Dockerfile and configs from Saagilat/tes3mp-easy-setup..."
     for f in tes3mp.dockerfile docker-compose.yml nginx.conf export.dockerfile export_server.sh; do
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/docker/$f" -O "$dest/$f"
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/docker/$f" -O "$dest/$f"
     done
     for f in update_mods.sh; do
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/setup/scripts/$f" -O "$dest/$f"
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/scripts/$f" -O "$dest/$f"
     done
     chmod +x "$dest/update_mods.sh"
 
