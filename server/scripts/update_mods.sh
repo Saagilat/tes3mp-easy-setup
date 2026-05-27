@@ -1,36 +1,43 @@
 #!/bin/bash
 #
-# update_mods.sh — automatic mod updater for TES3MP server
+# update_mods.sh — automatic mod & script updater for TES3MP server
 #
 # What it does:
 #   1. Removes all .esp/.esm/.omwaddon/.omwscripts/.omwgame from data/ except original ones (Morrowind, Tribunal, Bloodmoon)
 #   2. Copies all .esp/.esm/.omwaddon/.omwscripts/.omwgame from mods/ to data/
-#   3. Computes CRC32 for all mod files in data/
-#   4. Generates data/requiredDataFiles.json
-#   5. Creates mods.zip for distribution to players
-#   6. Rebuilds and restarts the Docker container
+#   3. Synchronises .lua scripts from scripts/ to data/server/scripts/custom/ (removes stale scripts)
+#   4. Generates data/server/scripts/customScripts.lua with script names
+#   5. Patches data/server/scripts/serverCore.lua to load customScripts.lua
+#   6. Computes CRC32 for all mod files in data/
+#   7. Generates data/requiredDataFiles.json
+#   8. Creates mods.zip for distribution to players
+#   9. Creates scripts.zip for web endpoint
+#  10. Rebuilds and restarts the Docker container
 #
 # Usage:
 #   Place .esp/.esm/.omwaddon/.omwscripts/.omwgame files in mods/
+#   Place .lua files in scripts/
 #   Run: bash update_mods.sh
 #
-# Removing a mod:
-#   Delete the file from mods/ and run the script again
+# Removing a mod/script:
+#   Delete the file from mods/ or scripts/ and run the script again
 #
-# Requirements: bash, python3, zip, docker, docker compose
+# Requirements: bash, python3, rsync, zip, docker, docker compose
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DATA_DIR="$SCRIPT_DIR/data"
 MODS_DIR="$SCRIPT_DIR/mods"
+SCRIPTS_DIR="$SCRIPT_DIR/scripts"
 
 # Original Morrowind files — NOT touched or deleted
 ORIGINAL_FILES=("Morrowind.esm" "Tribunal.esm" "Bloodmoon.esm")
 
-echo "=== TES3MP Mod Updater ==="
-echo "Data directory: $DATA_DIR"
-echo "Mods directory: $MODS_DIR"
+echo "=== TES3MP Mod & Script Updater ==="
+echo "Data directory:    $DATA_DIR"
+echo "Mods directory:    $MODS_DIR"
+echo "Scripts directory: $SCRIPTS_DIR"
 echo ""
 
 # --- Dependency check ---
@@ -48,7 +55,7 @@ if [ ! -d "$DATA_DIR" ]; then
 fi
 
 # --- Step 1: Remove mods from data/ (keep only originals) ---
-echo "[1/6] Removing old mods from data/..."
+echo "[1/8] Removing old mods from data/..."
 for file in "$DATA_DIR"/*.esp "$DATA_DIR"/*.ESP "$DATA_DIR"/*.esm "$DATA_DIR"/*.ESM \
             "$DATA_DIR"/*.omwaddon "$DATA_DIR"/*.OMWADDON \
             "$DATA_DIR"/*.omwscripts "$DATA_DIR"/*.OMWSCRIPTS \
@@ -75,7 +82,7 @@ done
 
 # --- Step 2: Copy mods ---
 echo ""
-echo "[2/6] Copying mods from mods/ to data/..."
+echo "[2/8] Copying mods from mods/ to data/..."
 if [ ! -d "$MODS_DIR" ]; then
     echo "  mods/ directory does not exist. Creating..."
     mkdir -p "$MODS_DIR"
@@ -112,10 +119,82 @@ if [ "$copied" -eq 0 ]; then
     echo "  (no mods to copy)"
 fi
 
-# --- Step 3: Compute CRC32 ---
+# --- Step 3: Sync scripts ---
 echo ""
+echo "[3/8] Syncing scripts to data/server/scripts/custom/..."
+CUSTOM_SCRIPTS_DIR="$DATA_DIR/server/scripts/custom"
+mkdir -p "$CUSTOM_SCRIPTS_DIR"
+
+# Remove all existing custom scripts (clean sync)
+rm -f "$CUSTOM_SCRIPTS_DIR"/*.lua
+
+script_copied=0
+if [ -d "$SCRIPTS_DIR" ]; then
+    for file in "$SCRIPTS_DIR"/*.lua "$SCRIPTS_DIR"/*.LUA; do
+        [ -f "$file" ] || continue
+        cp "$file" "$CUSTOM_SCRIPTS_DIR/"
+        echo "  - Copied: $(basename "$file")"
+        ((script_copied++)) || true
+    done
+fi
+
+if [ "$script_copied" -eq 0 ]; then
+    echo "  (no scripts to copy)"
+fi
+
+# --- Step 4: Generate customScripts.lua ---
 echo ""
-echo "[3/6] Generating requiredDataFiles.json..."
+echo "[4/8] Generating customScripts.lua..."
+
+CUSTOM_SCRIPTS_LUA="$DATA_DIR/server/scripts/customScripts.lua"
+echo "return {" > "$CUSTOM_SCRIPTS_LUA"
+
+script_names=()
+for file in "$CUSTOM_SCRIPTS_DIR"/*.lua; do
+    [ -f "$file" ] || continue
+    basename="$(basename "$file" .lua)"
+    # Convert module name: replace / with ., remove extension
+    script_names+=("$basename")
+done
+
+for name in "${script_names[@]}"; do
+    echo "    \"custom.$name\"," >> "$CUSTOM_SCRIPTS_LUA"
+done
+
+echo "}" >> "$CUSTOM_SCRIPTS_LUA"
+echo "  Generated: $(basename "$CUSTOM_SCRIPTS_LUA") (${#script_names[@]} scripts)"
+
+# --- Step 5: Patch serverCore.lua ---
+echo ""
+echo "[5/8] Patching serverCore.lua to load custom scripts..."
+
+SERVER_CORE_LUA="$DATA_DIR/server/scripts/serverCore.lua"
+
+if [ ! -f "$SERVER_CORE_LUA" ]; then
+    echo "  Warning: serverCore.lua not found at $SERVER_CORE_LUA"
+    echo "  customScripts.lua will be available but not auto-loaded."
+    echo "  Add the following to your serverCore.lua manually:"
+    echo "    customScripts = dofile(\"customScripts.lua\")"
+else
+    # Check if already patched
+    if grep -q "dofile(\"customScripts.lua\")" "$SERVER_CORE_LUA" 2>/dev/null; then
+        echo "  serverCore.lua already patched — skipping"
+    else
+        # Replace customScripts = {} with dofile version
+        if grep -q "customScripts\s*=" "$SERVER_CORE_LUA" 2>/dev/null; then
+            sed -i 's/customScripts\s*=\s*{.*}/customScripts = dofile("customScripts.lua")/' "$SERVER_CORE_LUA"
+            echo "  Patched: replaced customScripts = {...} with dofile(\"customScripts.lua\")"
+        else
+            # If no customScripts line exists, prepend it at the beginning
+            sed -i '1i customScripts = dofile("customScripts.lua")' "$SERVER_CORE_LUA"
+            echo "  Patched: prepended customScripts = dofile(\"customScripts.lua\")"
+        fi
+    fi
+fi
+
+# --- Step 6: Compute CRC32 ---
+echo ""
+echo "[6/8] Generating requiredDataFiles.json..."
 
 # Generate JSON via Python
 export _DATA_DIR="$DATA_DIR"
@@ -166,8 +245,9 @@ for entry in result:
         print(f"    - {name}: {crcs}")
 PYEOF
 
+# --- Step 7: Create mods.zip ---
 echo ""
-echo "[5/6] Creating mods.zip for distribution to players..."
+echo "[7/8] Creating mods.zip for distribution to players..."
 
 # Collect mods (all .esp/.esm/.omwaddon/.omwscripts/.omwgame except originals)
 mods_to_zip=()
@@ -209,17 +289,34 @@ if [ ! -f "$DATA_DIR/mods.zip" ]; then
     echo "  No mods to archive"
 fi
 
+# --- Step 8: Create scripts.zip ---
 echo ""
-echo "[6/6] Rebuilding and restarting Docker container..."
+echo "[8/8] Creating scripts.zip for distribution..."
 
-if [ ! -f "$SCRIPT_DIR/docker-compose.yml" ]; then
-    echo "  Error: docker-compose.yml not found in $SCRIPT_DIR"
-    exit 1
+rm -f "$DATA_DIR/scripts.zip"
+if [ "$script_copied" -gt 0 ]; then
+    scripts_to_zip=()
+    for file in "$CUSTOM_SCRIPTS_DIR"/*.lua; do
+        [ -f "$file" ] || continue
+        scripts_to_zip+=("$file")
+    done
+
+    if [ ${#scripts_to_zip[@]} -gt 0 ]; then
+        zip -j "$DATA_DIR/scripts.zip" "${scripts_to_zip[@]}"
+        echo "  Added scripts: ${#scripts_to_zip[@]} files"
+    fi
 fi
 
-cd "$SCRIPT_DIR"
-docker compose up -d --build
+if [ ! -f "$DATA_DIR/scripts.zip" ]; then
+    echo "  No scripts to archive"
+fi
 
 echo ""
 echo "=== Done! ==="
-echo "Check logs: docker compose logs 2>&1 | grep -E 'requiredDataFiles|Data file'"
+echo ""
+echo "Next steps:"
+echo "  1. Restart the Docker container: docker compose restart"
+echo "     (or rebuild if this is the first run: docker compose up -d --build)"
+echo ""
+echo "  Upload mods from a client machine:"
+echo "    admin/linux/utilities/tes3mp-mods-upload"

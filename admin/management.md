@@ -25,7 +25,9 @@ Config files are now stored on the host filesystem at `/opt/tes3mp/config/` and 
 | `/opt/tes3mp/config/server/data/banlist.json` | `/tes3mp/server/data/banlist.json` |
 | `/opt/tes3mp/data/requiredDataFiles.json` | `/tes3mp/server/data/requiredDataFiles.json` |
 
-Why `config/` and not `data/`? Because `data/` is reserved for TES3MP runtime data (players, cells). Putting config files there would cause them to be overwritten on server shutdown. The separate `config/` directory keeps configuration cleanly separated from runtime data.
+Why `config/` and not `data/`? Because `data/` is reserved for TES3MP runtime data (players, cells, mod files, scripts). Putting config files there would cause them to be overwritten on server shutdown. The separate `config/` directory keeps configuration cleanly separated from runtime data.
+
+> **Note:** The entire `data/` directory is bind-mounted into the container at `/tes3mp`. This means all files in `data/` (server binary, scripts, mods, `serverCore.lua`, `requiredDataFiles.json`) are directly editable on the host and visible inside the container without rebuilding.
 
 After editing any config file, run:
 
@@ -110,15 +112,16 @@ The auto-save interval (`config.autoSaveInterval` in `config.lua`) is your safet
    ```
 
 
-## Enabling endpoints: /get-mods, /get-world, /get-characters
+## Enabling endpoints: /get-mods, /get-scripts, /get-world, /get-characters
 
-All three endpoints are **disabled by default**. Enabling them is **recommended** — they allow players to easily download mods, and give access to world/character data for debugging, backups, or community tools.
+All four endpoints are **disabled by default**. Enabling them is **recommended** — they allow players to easily download mods and scripts, and give access to world/character data for debugging, backups, or community tools.
 
 ### Available endpoints
 
 | Endpoint | Description | Archive |
 |----------|-------------|---------|
 | `/get-mods` | Download all server mods (`.esp`/`.esm` files) | `mods.zip` |
+| `/get-scripts` | Download all custom Lua scripts | `scripts.zip` |
 | `/get-world` | Download world state (all cell JSON files) | `world_state.tar.gz` |
 | `/get-characters` | Download all character data | `characters.tar.gz` |
 
@@ -150,6 +153,7 @@ Reverse the steps above and rebuild.
 - Rate limit: each endpoint has its own configurable limit (default: **5 requests per minute** per IP). Archive is cached for 10 minutes.
 - When enabled, endpoints are available at:
   - `http://<server-IP>:8085/get-mods`
+  - `http://<server-IP>:8085/get-scripts`
   - `http://<server-IP>:8085/get-world`
   - `http://<server-IP>:8085/get-characters`
 

@@ -161,6 +161,13 @@ gather_options() {
         *)     ENABLE_MODS="no" ;;
     esac
 
+    read -r -p "Enable /get-scripts? [y/N]: " ENABLE_SCRIPTS </dev/tty
+    ENABLE_SCRIPTS="${ENABLE_SCRIPTS:-n}"
+    case "${ENABLE_SCRIPTS,,}" in
+        y|yes) ENABLE_SCRIPTS="yes" ;;
+        *)     ENABLE_SCRIPTS="no" ;;
+    esac
+
     read -r -p "Enable /get-world? [y/N]: " ENABLE_WORLD </dev/tty
     ENABLE_WORLD="${ENABLE_WORLD:-n}"
     case "${ENABLE_WORLD,,}" in
@@ -186,6 +193,12 @@ gather_options() {
     if [[ "$ENABLE_MODS" == "yes" ]]; then
         read -r -p "  /get-mods rate limit (req/min) [default: 5]: " input </dev/tty
         MODS_RATE="${input:-5}"
+    fi
+
+    SCRIPTS_RATE="5"
+    if [[ "$ENABLE_SCRIPTS" == "yes" ]]; then
+        read -r -p "  /get-scripts rate limit (req/min) [default: 5]: " input </dev/tty
+        SCRIPTS_RATE="${input:-5}"
     fi
 
     WORLD_RATE="5"
@@ -396,8 +409,8 @@ gather_lua_options() {
 # ────────────────────────────────────────────────────────────
 setup_files() {
     local dest="/opt/tes3mp"
-    mkdir -p "$dest/data" "$dest/data/players" "$dest/data/cells" "$dest/mods" \
-             "$dest/config/server/scripts" "$dest/config/server/data"
+    mkdir -p "$dest/data" "$dest/data/players" "$dest/data/cells" \
+             "$dest/mods" "$dest/scripts"
     chown -R root:root "$dest"
 
     cd "$dest"
@@ -427,25 +440,14 @@ setup_files() {
         ok "TES3MP server installed"
     fi
 
-    # Copy reference configs into config/ so bind mounts have something to mount
-    info "Setting up bind-mountable config directory..."
-    if [[ ! -f "$dest/config/tes3mp-server-default.cfg" ]]; then
-        cp "$dest/data/tes3mp-server-default.cfg" "$dest/config/"
-    fi
-    if [[ ! -f "$dest/config/server/scripts/config.lua" ]]; then
-        cp "$dest/data/server/scripts/config.lua" "$dest/config/server/scripts/"
-    fi
-    if [[ ! -f "$dest/config/server/data/banlist.json" ]]; then
-        cp "$dest/data/server/data/banlist.json" "$dest/config/server/data/"
-    fi
-    ok "Config directory ready"
+    ok "All files installed — configs are in data/, edit them directly on the host"
 }
 
 # ────────────────────────────────────────────────────────────
 # 5. Generate server config from answers
 # ────────────────────────────────────────────────────────────
 write_config() {
-    local dest="/opt/tes3mp/config"
+    local dest="/opt/tes3mp/data"
     local cfg="$dest/tes3mp-server-default.cfg"
 
     info "Generating $cfg from your answers..."
@@ -484,7 +486,7 @@ write_config() {
 # 5b. Generate Lua config from answers
 # ────────────────────────────────────────────────────────────
 write_lua_config() {
-    local dest="/opt/tes3mp/config/server/scripts"
+    local dest="/opt/tes3mp/data/server/scripts"
     local cfg="$dest/config.lua"
     local marker="-- install.sh config"
 
@@ -570,7 +572,7 @@ configure_endpoints() {
     sed -i "s/\"25565:25565\/udp\"/\"$TES3MP_PORT:25565\/udp\"/" "$compose"
 
     # Uncomment nginx service if at least one endpoint is enabled
-    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
         sed -i 's/#\(nginx:\)/\1/' "$compose"
         sed -i 's/#\(  image: nginx:alpine\)/  image: nginx:alpine/' "$compose"
         sed -i 's/#\(  ports:\)/  ports:/' "$compose"
@@ -611,11 +613,16 @@ configure_endpoints() {
 
     # Update rate limits in zone declarations
     sed -i "s/^limit_req_zone.*zone=mods:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=mods:10m rate=${MODS_RATE}r\/m;/" "$nginx"
+    sed -i "s/^limit_req_zone.*zone=scripts:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=scripts:10m rate=${SCRIPTS_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=world:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=world:10m rate=${WORLD_RATE}r\/m;/" "$nginx"
     sed -i "s/^limit_req_zone.*zone=characters:[0-9]\+m rate=[0-9.]\+r\/m;/limit_req_zone \$binary_remote_addr zone=characters:10m rate=${CHARACTERS_RATE}r\/m;/" "$nginx"
 
     if [[ "$ENABLE_MODS" == "yes" ]]; then
         uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_MODS"
+    fi
+
+    if [[ "$ENABLE_SCRIPTS" == "yes" ]]; then
+        uncomment_nginx_block "$nginx" "UNCOMMENT_TO_ENABLE_GET_SCRIPTS"
     fi
 
     if [[ "$ENABLE_WORLD" == "yes" ]]; then
@@ -659,13 +666,13 @@ configure_firewall() {
     case "$fw" in
         ufw)
             ufw allow "$TES3MP_PORT/udp" comment "TES3MP"
-            if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+            if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
                 ufw allow "8085/tcp" comment "TES3MP HTTP endpoints"
             fi
             ;;
         firewall-cmd)
             firewall-cmd --permanent --add-port="$TES3MP_PORT/udp"
-            if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+            if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
                 firewall-cmd --permanent --add-port="8085/tcp"
             fi
             firewall-cmd --reload
@@ -723,10 +730,11 @@ EOF
     echo ""
     echo "  Endpoints:"
     echo "    /get-mods:        $ENABLE_MODS"
+    echo "    /get-scripts:     $ENABLE_SCRIPTS"
     echo "    /get-world:       $ENABLE_WORLD"
     echo "    /get-characters:  $ENABLE_CHARACTERS"
     echo ""
-    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
         echo "  HTTP port (endpoints): 8085"
     fi
     echo ""
@@ -740,9 +748,9 @@ EOF
     echo "  Stop:        docker compose -f $dest/docker-compose.yml down"
     echo "  Restart:     docker compose -f $dest/docker-compose.yml up -d --build"
     echo ""
-    echo "  Config:      nano $dest/config/tes3mp-server-default.cfg"
-    echo "  Lua config:  nano $dest/config/server/scripts/config.lua"
-    echo "  Ban list:    nano $dest/config/server/data/banlist.json"
+    echo "  Config:      nano $dest/data/tes3mp-server-default.cfg"
+    echo "  Lua config:  nano $dest/data/server/scripts/config.lua"
+    echo "  Ban list:    nano $dest/data/server/data/banlist.json"
     echo "  Required data files: nano $dest/data/requiredDataFiles.json"
     echo ""
     echo "  After editing any config: docker compose restart"

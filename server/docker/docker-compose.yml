@@ -10,12 +10,7 @@ services:
     stop_grace_period: 30s
     restart: unless-stopped
     volumes:
-      - ./data/players:/tes3mp/server/data/player
-      - ./data/cells:/tes3mp/server/data/cell
-      - ./data/requiredDataFiles.json:/tes3mp/server/data/requiredDataFiles.json
-      - ./config/tes3mp-server-default.cfg:/tes3mp/tes3mp-server-default.cfg
-      - ./config/server/scripts/config.lua:/tes3mp/server/scripts/config.lua
-      - ./config/server/data/banlist.json:/tes3mp/server/data/banlist.json
+      - ./data:/tes3mp
 
   # ⚠️ ALL ENDPOINTS DISABLED BY DEFAULT
   # Uncomment the lines below (and the corresponding location blocks in nginx.conf)
