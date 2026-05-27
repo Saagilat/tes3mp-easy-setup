@@ -473,12 +473,16 @@ setup_files() {
 
     if [[ "$ENABLE_EXAMPLE_MODS" == "yes" ]]; then
         info "Downloading example server script..."
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/example-mods/server-scripts/test_server.lua" \
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/modding-test/server-scripts/test_server.lua" \
             -O "$dest/server-scripts/test_server.lua"
 
         info "Downloading example client script..."
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/example-mods/client-scripts/test_client.lua" \
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/modding-test/client-scripts/test_client.lua" \
             -O "$dest/client-scripts/test_client.lua"
+
+        info "Downloading example plugin..."
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/modding-test/plugins/test_plugin.omwaddon" \
+            -O "$dest/plugins/test_plugin.omwaddon"
 
         ok "Example mods downloaded"
     fi
