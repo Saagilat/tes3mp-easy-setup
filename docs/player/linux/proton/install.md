@@ -48,7 +48,7 @@ rm -rf ~/.steam/steam/steamapps/compatdata/{TES3MP_ID}/pfx
 ln -s ~/.steam/steam/steamapps/compatdata/{WIZARD_ID}/pfx ~/.steam/steam/steamapps/compatdata/{TES3MP_ID}/pfx
 ```
 
-- Create a symlink from the prefix to your Morrowind Data Files, so OpenMW
+- Create a symlink from the wizard prefix to your Morrowind Data Files, so OpenMW
   uses the same plugin files that `tes3mp-client-update` writes to:
 
 ```bash
