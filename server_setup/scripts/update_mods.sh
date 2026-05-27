@@ -294,9 +294,9 @@ fi
 
 # Include requiredDataFiles.json for client to know load order
 if [ -f "$DATA_DIR/requiredDataFiles.json" ]; then
-    cp "$DATA_DIR/requiredDataFiles.json" "$SCRIPT_DIR/tmp_req.json"
-    zip -j "$DATA_DIR/plugins.zip" "$SCRIPT_DIR/tmp_req.json"
-    rm -f "$SCRIPT_DIR/tmp_req.json"
+    cp "$DATA_DIR/requiredDataFiles.json" "$SCRIPT_DIR/requiredDataFiles.json"
+    zip -j "$DATA_DIR/plugins.zip" "$SCRIPT_DIR/requiredDataFiles.json"
+    rm -f "$SCRIPT_DIR/requiredDataFiles.json"
     echo "  Added to archive: requiredDataFiles.json"
 fi
 
