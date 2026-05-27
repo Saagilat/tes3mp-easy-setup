@@ -168,41 +168,33 @@ done
 echo "}" >> "$CUSTOM_SCRIPTS_LUA"
 echo "  Generated: $(basename "$CUSTOM_SCRIPTS_LUA") (${#script_names[@]} scripts)"
 
-# --- Step 5: Patch serverCore.lua ---
+# --- Step 5: Check serverCore.lua ---
 echo ""
-echo "[5/8] Patching serverCore.lua to load custom scripts..."
+echo "[5/8] Checking serverCore.lua..."
 
 SERVER_CORE_LUA="$SERVER_SCRIPTS_DIR/serverCore.lua"
 
 if [ ! -f "$SERVER_CORE_LUA" ]; then
     echo "  Warning: serverCore.lua not found at $SERVER_CORE_LUA"
     echo "  customScripts.lua will be available but not auto-loaded."
-    echo "  Add the following to your serverCore.lua manually:"
-    echo "    customScripts = dofile(\"customScripts.lua\")"
+    echo "  Make sure your serverCore.lua contains:"
+    echo "    customScripts = require(\"customScripts\")"
 else
-    if [ "$script_copied" -eq 0 ]; then
-        echo "  No custom scripts found — restoring default customScripts = {} if needed"
-        if grep -q "dofile" "$SERVER_CORE_LUA" 2>/dev/null; then
-            sed -i 's/customScripts\s*=\s*dofile.*/customScripts = {}/' "$SERVER_CORE_LUA"
-            echo "  Restored: customScripts = {}"
-        else
-            echo "  No changes needed"
-        fi
+    if grep -q "require.*customScripts" "$SERVER_CORE_LUA" 2>/dev/null; then
+        echo "  serverCore.lua already has require(\"customScripts\") — no changes needed"
+    elif grep -q "customScripts" "$SERVER_CORE_LUA" 2>/dev/null; then
+        echo "  Note: serverCore.lua has customScripts but no require('customScripts')"
+        echo "  customScripts.lua is generated but needs manual require in serverCore.lua:"
+        echo "    customScripts = require(\"customScripts\")"
     else
-        # Check if already patched
-        if grep -q "dofile(\"customScripts.lua\")" "$SERVER_CORE_LUA" 2>/dev/null; then
-            echo "  serverCore.lua already patched — skipping"
-        else
-            # Replace customScripts = {} with dofile version
-            if grep -q "customScripts\s*=" "$SERVER_CORE_LUA" 2>/dev/null; then
-                sed -i 's|customScripts\s*=\s*{.*}|customScripts = dofile("customScripts.lua")|' "$SERVER_CORE_LUA"
-                echo "  Patched: replaced customScripts = {...} with dofile(\"customScripts.lua\")"
-            else
-                # If no customScripts line exists, prepend it at the beginning
-                sed -i '1i customScripts = dofile("customScripts.lua")' "$SERVER_CORE_LUA"
-                echo "  Patched: prepended customScripts = dofile(\"customScripts.lua\")"
-            fi
-        fi
+        echo "  Note: customScripts.lua is generated but serverCore.lua needs:"
+        echo "    customScripts = require(\"customScripts\")"
+    fi
+
+    # Remove any dofile patches we might have added in previous versions
+    if grep -q "dofile.*customScripts" "$SERVER_CORE_LUA" 2>/dev/null; then
+        sed -i '/dofile.*customScripts/d' "$SERVER_CORE_LUA"
+        echo "  Cleaned up: removed legacy dofile patch"
     fi
 fi
 
