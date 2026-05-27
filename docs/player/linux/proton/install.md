@@ -2,7 +2,7 @@
 
 ## 1. Download and extract the Windows version of TES3MP
 
-- Download `tes3mp.Win64.release.0.8.1.zip` from the [releases page](https://github.com/Saagilat/tes3mp-server-setup/releases)
+- Download `tes3mp.Win64.release.0.8.1.zip` from the [releases page](https://github.com/TES3MP/TES3MP/releases/download/tes3mp-0.8.1/tes3mp.Win64.release.0.8.1.zip)
 - Extract it to any convenient folder, e.g. `~/games/tes3mp`
 
 ## 2. Add `openmw-wizard.exe` to Steam as a non-Steam game
