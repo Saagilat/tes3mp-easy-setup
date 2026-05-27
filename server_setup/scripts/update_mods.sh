@@ -28,11 +28,10 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")/../docker" && pwd)"
-BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-DATA_DIR="$BASE_DIR/data"
-PLUGINS_DIR="$BASE_DIR/plugins"
-SERVER_SCRIPTS_DIR_LOCAL="$BASE_DIR/server-scripts"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DATA_DIR="$SCRIPT_DIR/data"
+PLUGINS_DIR="$SCRIPT_DIR/plugins"
+SERVER_SCRIPTS_DIR_LOCAL="$SCRIPT_DIR/server-scripts"
 
 # TES3MP paths inside the container (data/ is mounted at /tes3mp)
 # TES3MP runs with home=./server, so it looks for plugins in server/data/
