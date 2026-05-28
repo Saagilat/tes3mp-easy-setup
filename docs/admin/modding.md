@@ -6,12 +6,17 @@ This document describes what is supported and **not** supported in TES3MP 0.8.1 
 
 ### Plugins (`.esp`/`.esm`/`.omwaddon`/`.omwscripts`/`.omwgame`)
 
-Plugins are the only way to modify the game on the client side.
-The server checks their presence and CRC when a player connects via `requiredDataFiles.json`.
+Plugins modify the game on the client side. They can contain:
+
+- **Game data** (items, spells, NPCs, worlds, etc.)
+- **MWScript** — Morrowind's built-in scripting language (works fully on client)
+
+MWScript is executed by OpenMW on the client and supports functions like `MessageBox`, `Journal`, `AddItem`, `PlaceItem`, `StartScript`, etc. This is the primary way to add interactive content for players.
 
 - All clients must have the same plugins
-- `test_plugin.omwaddon` is an example working plugin
+- `test_plugin.omwaddon` is an example working plugin that uses MWScript
 - Plugins are distributed via `/get-mods` inside `mods.zip`
+- The server checks their presence and CRC via `requiredDataFiles.json`
 
 ### Server-side Lua scripts
 
@@ -25,11 +30,11 @@ They use the `customEventHooks` and `customCommandHooks` API.
 
 ### Client-side Lua scripts
 
-**No client Lua API exists.** OpenMW 0.47 does not have a built-in Lua engine on the client — support appeared only in OpenMW 0.48+.
+**No client Lua API exists in TES3MP 0.8.1.** OpenMW 0.47 does not have a built-in Lua engine on the client — support appeared only in OpenMW 0.48+.
 
 - `tes3mp.MessageBox()`, `tes3mp.LoadClientScript()` and similar client functions **do not exist**
 - `.lua` files placed in `Data Files/` are ignored and never executed
-- There is no need to download client scripts from the server — they are useless for this version
+- Client-side scripting requires **MWScript inside plugins** (see above), not standalone `.lua` files
 
 ### The `.omwscripts` format
 
@@ -43,7 +48,8 @@ The `.omwscripts` extension was included in `update_mods.sh` for forward compati
 | What can be modded | How |
 |-------------------|-----|
 | Game data (items, spells, worlds) | Plugins `.esp`/`.esm`/`.omwaddon` |
+| Client-side scripting (dialogs, quests, interactive content) | **MWScript** inside plugins |
 | Server logic (commands, events) | Lua scripts in `server-scripts/` |
-| Client scripts (GUI, custom features) | **NOT SUPPORTED** in TES3MP 0.8.1 |
+| Standalone client Lua scripts | **NOT SUPPORTED** in TES3MP 0.8.1 |
 
 Client-side Lua scripting requires TES3MP based on OpenMW 0.48+.
