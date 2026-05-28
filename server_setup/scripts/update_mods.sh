@@ -43,7 +43,7 @@ echo "Data directory:          $DATA_DIR"
 echo "Server data:             $SERVER_DATA_DIR"
 echo "Plugins directory:       $PLUGINS_DIR"
 echo "Server scripts:          $SERVER_SCRIPTS_DIR_LOCAL"
-echo "Client scripts:          $SCRIPT_DIR/client-scripts"
+echo "Client scripts (not supported in TES3MP 0.8.1): $SCRIPT_DIR/client-scripts"
 echo ""
 
 # --- Dependency check ---
@@ -237,7 +237,7 @@ else
         echo "  customScripts.lua will not be auto-loaded."
     fi
 
-    # Remove legacy clientScriptsLoader require if present
+    # Remove legacy clientScriptsLoader require if present (from broken previous version)
     if grep -q "clientScriptsLoader" "$SERVER_CORE_LUA" 2>/dev/null; then
         sed -i '/clientScriptsLoader/d' "$SERVER_CORE_LUA"
         echo "  Cleaned up: removed legacy require(\"clientScriptsLoader\") from serverCore.lua"

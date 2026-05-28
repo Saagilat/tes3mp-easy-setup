@@ -234,7 +234,7 @@ gather_options() {
     # ---- Example content ----
     echo ""
     echo "--- Example content ---"
-    echo "Test server/client scripts to verify the setup works."
+    echo "Test server scripts and plugins to verify the setup works."
     echo ""
     read -r -p "Create example mods (scripts) to verify setup? [Y/n]: " ENABLE_EXAMPLE_MODS </dev/tty
     ENABLE_EXAMPLE_MODS="${ENABLE_EXAMPLE_MODS:-y}"
