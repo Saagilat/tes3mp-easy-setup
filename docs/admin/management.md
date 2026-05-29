@@ -42,6 +42,46 @@ When enabled, endpoints are available at:
 - `http://<server-ip>:8085/get-server-scripts`
 - `http://<server-ip>:8085/get-world`
 
+## Player role management
+
+The first account that registers on the server automatically receives the **ServerOwner** rank (`staffRank: 3`).
+
+To change a player's role:
+
+1. **Stop the server:**
+
+   ```bash
+   ssh my-server "cd /tes3mp-easy && docker compose down"
+   ```
+
+2. **Open the player file** and change `staffRank`:
+
+   ```bash
+   ssh my-server "nano /tes3mp-easy/container-data/server/data/player/<accountName>.json"
+   ```
+
+   Find the `settings` section and set the desired rank:
+
+   ```json
+   "settings": {
+       "staffRank": 3,
+       ...
+   }
+   ```
+
+   | Value | Rank |
+   |-------|------|
+   | `0` | Regular player |
+   | `1` | Moderator |
+   | `2` | Admin |
+   | `3` | Server owner |
+
+3. **Start the server:**
+
+   ```bash
+   ssh my-server "cd /tes3mp-easy && docker compose up -d"
+   ```
+
 ## Further reading
 
 - [Modding — what works and what doesn't in TES3MP 0.8.1](modding.md)

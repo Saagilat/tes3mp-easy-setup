@@ -85,52 +85,27 @@ The script copies all files to the server and restarts the container.
 
 ---
 
-## 5. Create an admin account
+## 5. Create an admin account and run startup command
+
+First, make sure you have an admin account — see [Player role management](management.md#player-role-management).
+
+Once you have an admin character:
 
 1. **Join the server** through the TES3MP client ([Player guide](../player/install.md) — if you need to set up a client)
-2. **Register** — enter any username and password (the first registered account gets ServerOwner rank by default)
-3. **Exit the game**
-4. **Stop the server:**
+2. **Run `/runstartup`** in the in-game chat (press **Y** to open the chat)
+   > This command must be executed **on every newly created world** (after world creation or reset) for the server to function correctly.
+3. **Restart the server:**
 
    ```bash
-   ssh my-server "cd /tes3mp-easy && docker compose down"
+   ssh my-server "cd /tes3mp-easy && docker compose restart"
    ```
-
-5. **Open the player file** and change `staffRank`:
-
-   ```bash
-   ssh my-server "nano /tes3mp-easy/container-data/server/data/player/<accountName>.json"
-   ```
-
-   Find the `settings` section and set the desired rank:
-
-   ```json
-   "settings": {
-       "staffRank": 3,
-       ...
-   }
-   ```
-
-   | Value | Rank |
-   |-------|------|
-   | `0` | Regular player |
-   | `1` | Moderator |
-   | `2` | Admin |
-   | `3` | Server owner |
-
-6. **Start the server:**
-
-   ```bash
-   ssh my-server "cd /tes3mp-easy && docker compose up -d"
-   ```
-
-Done — you are now a server administrator.
 
 ---
 
 ## Next steps
 
 - [Server management reference](management.md) — commands, endpoints, configs
+- [Player role management](management.md#player-role-management) — how to manage player roles
 - [Modding — what works and what doesn't in TES3MP 0.8.1](modding.md)
 - [config.lua reference — full settings documentation](tes3mp_settings.md)
 - [Player guide](../player/install.md) — if you need to set up a client
