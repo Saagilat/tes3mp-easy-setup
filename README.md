@@ -2,37 +2,19 @@
 
 Guides and scripts for setting up and managing TES3MP servers and installing the TES3MP client.
 
-## Quickstart
+## 🎮 Игрок
 
-### 🎮 Player
-Follow the [player guide](docs/player/README.md) for your OS.
+[Пошаговый маршрут игрока](PLAYER.md) — от установки клиента до захода на сервер.
 
-### 🖥️ Server admin
+## 🖥️ Администратор
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/scripts/install.sh | bash
-```
-
-For detailed setup instructions see [setup guide](docs/admin/install.md).  
-For server management see [management guide](docs/admin/management.md).
-
-## Tools
-
-- **`tools/linux/tes3mp-server-update-mods`** — sync plugins and server scripts from your local machine to the server
-- **`tools/linux/tes3mp-client-update-mods`** — download and install the latest plugins from the server
-
-## Repository layout
-
-```
-server_setup/ — server setup (Docker, install/update scripts)
-tools/        — synchronisation utilities
-docs/         — admin and player documentation
-example/      — example Lua scripts (for testing)
-```
+[Пошаговый маршрут администратора](ADMIN.md) — от установки сервера до модерации.
 
 ---
 
-- [TES3MP on GitHub](https://github.com/TES3MP/TES3MP)
-- [OpenMW on GitHub](https://github.com/OpenMW/openmw)
+## Ресурсы
 
-Thanks to David Cernat for TES3MP and the OpenMW team for making Morrowind open-source and cross-platform.
+- [TES3MP на GitHub](https://github.com/TES3MP/TES3MP)
+- [OpenMW на GitHub](https://github.com/OpenMW/openmw)
+
+Благодарности David Cernat за TES3MP и команде OpenMW за то, что сделали Morrowind открытым и кроссплатформенным.
