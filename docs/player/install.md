@@ -36,7 +36,7 @@ cp tools/linux/example-settings.cfg ~/openmw-profile/settings.cfg
 
 | Language | Command |
 |----------|---------|
-| Russian | `bash tools/linux/localization/russian/install.sh` |
+| Russian | [Setup guide](../../tools/linux/localization/russian/README.md) |
 
 ---
 
