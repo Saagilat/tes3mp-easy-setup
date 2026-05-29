@@ -1,6 +1,6 @@
-# Маршрут администратора
+# Admin Guide
 
-## 1. Клонировать репозиторий
+## 1. Clone the repository
 
 ```bash
 git clone git@github.com:Saagilat/tes3mp-easy-setup.git
@@ -9,47 +9,47 @@ cd tes3mp-easy-setup
 
 ---
 
-## 2. Установить сервер
+## 2. Install the server
 
-Запустите скрипт установки на вашем сервере (VPS):
+Run the install script on your server (VPS):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/scripts/install.sh | bash
 ```
 
-Или скачайте и запустите вручную:
+Or download and run it manually:
 
 ```bash
 wget https://raw.githubusercontent.com/Saagilat/tes3mp-easy-setup/master/server_setup/scripts/install.sh
 sudo bash install.sh
 ```
 
-Скрипт установит Docker, скачает TES3MP сервер, настроит конфиги и запустит контейнер.
+The script installs Docker, downloads the TES3MP server, configures settings, and starts the container.
 
 ---
 
-## 3. Настроить SSH-доступ и алиас
+## 3. Set up SSH access and an alias
 
-Чтобы отправлять моды на сервер одной командой, настройте SSH-ключ:
+To push mods to the server with a single command, set up an SSH key:
 
 ```bash
 ssh-keygen -t ed25519
-ssh-copy-id root@ваш-сервер.или-ip
+ssh-copy-id root@your-server-ip-or-host
 ```
 
-Проверьте подключение:
+Verify the connection:
 
 ```bash
-ssh root@ваш-сервер.или-ip
+ssh root@your-server-ip-or-host
 ```
 
-Добавьте алиас в `~/.bashrc` или `~/.bash_aliases`:
+Add an alias to `~/.bashrc` or `~/.bash_aliases`:
 
 ```bash
-alias tes3mp-easy-имя-сервера='bash ~/tes3mp-easy-setup/tools/linux/tes3mp-server-update-mods'
+alias tes3mp-easy-server-name='bash ~/tes3mp-easy-setup/tools/linux/tes3mp-server-update-mods'
 ```
 
-Примените изменения:
+Apply the changes:
 
 ```bash
 source ~/.bashrc
@@ -57,53 +57,53 @@ source ~/.bashrc
 
 ---
 
-## 4. Выгрузить моды
+## 4. Push mods
 
-Отредактируйте конфиг синхронизации:
+Edit the sync config:
 
 ```bash
 nano tools/linux/tes3mp-server-update-mods.conf
 ```
 
-Укажите сервер и локальные папки с модами:
+Set the server and your local mod directories:
 
 ```
-SSH_HOST=root@ваш-сервер.или-ip
-PLUGINS_DIR=/путь/к/вашим/plugins
-SERVER_SCRIPTS_DIR=/путь/к/вашим/server-scripts
+SSH_HOST=root@your-server-ip-or-host
+PLUGINS_DIR=/path/to/your/plugins
+SERVER_SCRIPTS_DIR=/path/to/your/server-scripts
 ```
 
-Поместите файлы модов (`.esp`/`.esm`/`.omwaddon`) в папку `PLUGINS_DIR`,
-а Lua-скрипты — в папку `SERVER_SCRIPTS_DIR`.
+Place your mod files (`.esp`/`.esm`/`.omwaddon`) in `PLUGINS_DIR`,
+and Lua scripts in `SERVER_SCRIPTS_DIR`.
 
-Запустите синхронизацию:
+Run the sync:
 
 ```bash
-tes3mp-easy-имя-сервера
+tes3mp-easy-server-name
 ```
 
-Скрипт скопирует все файлы на сервер и перезапустит контейнер.
+The script copies all files to the server and restarts the container.
 
 ---
 
-## 5. Создать аккаунт администратора
+## 5. Create an admin account
 
-1. **Зайдите в игру** через клиент TES3MP на вашем сервере
-2. **Зарегистрируйтесь** — введите любой логин и пароль (первый зарегистрированный аккаунт получит ранг ServerOwner)
-3. **Выйдите из игры**
-4. **Остановите сервер:**
-
-   ```bash
-   ssh root@ваш-сервер.или-ip "cd /tes3mp-easy && docker compose down"
-   ```
-
-5. **Откройте файл игрока** и измените `staffRank`:
+1. **Join the server** through the TES3MP client
+2. **Register** — enter any username and password (the first registered account gets ServerOwner rank by default)
+3. **Exit the game**
+4. **Stop the server:**
 
    ```bash
-   ssh root@ваш-сервер.или-ip "nano /tes3mp-easy/container-data/server/data/player/<accountName>.json"
+   ssh root@your-server-ip-or-host "cd /tes3mp-easy && docker compose down"
    ```
 
-   Найдите секцию `settings` и установите нужный ранг:
+5. **Open the player file** and change `staffRank`:
+
+   ```bash
+   ssh root@your-server-ip-or-host "nano /tes3mp-easy/container-data/server/data/player/<accountName>.json"
+   ```
+
+   Find the `settings` section and set the desired rank:
 
    ```json
    "settings": {
@@ -112,17 +112,17 @@ tes3mp-easy-имя-сервера
    }
    ```
 
-   | Код | Ранг |
-   |-----|------|
-   | `0` | Обычный игрок |
-   | `1` | Модератор |
-   | `2` | Администратор |
-   | `3` | Владелец сервера (ServerOwner) |
+   | Value | Rank |
+   |-------|------|
+   | `0` | Regular player |
+   | `1` | Moderator |
+   | `2` | Admin |
+   | `3` | Server owner |
 
-6. **Запустите сервер:**
+6. **Start the server:**
 
    ```bash
-   ssh root@ваш-сервер.или-ip "cd /tes3mp-easy && docker compose up -d"
+   ssh root@your-server-ip-or-host "cd /tes3mp-easy && docker compose up -d"
    ```
 
-Готово — теперь вы администратор сервера.
+Done — you are now a server administrator.

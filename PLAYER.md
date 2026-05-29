@@ -1,6 +1,6 @@
-# Маршрут игрока
+# Player Guide
 
-## 1. Клонировать репозиторий
+## 1. Clone the repository
 
 ```bash
 git clone git@github.com:Saagilat/tes3mp-easy-setup.git
@@ -9,70 +9,70 @@ cd tes3mp-easy-setup
 
 ---
 
-## 2. Установить клиент
+## 2. Install the client
 
-Выберите вашу операционную систему:
+Choose your operating system:
 
 ### Linux
 
-[Инструкция по установке через Proton](docs/player/linux/proton/install.md)
+[Installation guide for Steam Proton](docs/player/linux/proton/install.md)
 
 ### Windows
 
-> Скоро будет добавлено
+> Coming soon
 
 ### macOS
 
-> Скоро будет добавлено
+> Coming soon
 
 ---
 
-## 3. Настроить шрифты
+## 3. Configure fonts
 
-После первого запуска в папке `openmw-profile` появится файл `settings.cfg`.
-Скопируйте в него готовый образец из репозитория:
+After the first launch, a `settings.cfg` file will appear inside your `openmw-profile` folder.
+Copy the example file from the repository:
 
 ```bash
 cp tools/linux/example-settings.cfg ~/openmw-profile/settings.cfg
 ```
 
-Если папки `openmw-profile` ещё нет — создайте её вручную:
+If the `openmw-profile` folder does not exist yet, create it manually:
 
 ```bash
 mkdir -p ~/openmw-profile
 cp tools/linux/example-settings.cfg ~/openmw-profile/settings.cfg
 ```
 
-> **Примечание:** Вместо `~/openmw-profile` укажите путь к вашей папке OpenMW.
-> Linux (Proton): файл лежит рядом с `openmw.cfg`, путь настраивается на шаге 2.
+> **Note:** Replace `~/openmw-profile` with the actual path to your OpenMW profile.
+> Linux (Proton): the file is located next to `openmw.cfg` (see step 2).
 
 ---
 
-## 4. (опционально) Установить локализацию
+## 4. (optional) Install localization
 
-Выберите язык:
+Choose your language:
 
-### Русский
+### Russian
 
 ```bash
 bash tools/linux/localization/russian/install.sh
 ```
 
-### Другие языки
+### Other languages
 
-> Будут добавлены позже
+> Will be added later
 
 ---
 
-## 5. Заполнить tes3mp-client-default.cfg
+## 5. Edit tes3mp-client-default.cfg
 
-Откройте файл `tes3mp-client-default.cfg` (рядом с `tes3mp.exe`) и укажите адрес сервера:
+Open `tes3mp-client-default.cfg` (next to `tes3mp.exe`) and set the server address:
 
 ```
-destinationAddress = ваш-сервер.или-ip
+destinationAddress = your-server-ip-or-host
 ```
 
-Порт по умолчанию: `25565`. Если порт нестандартный, укажите его:
+Default port is `25565`. For a non-standard port, set it explicitly:
 
 ```
 destinationPort = 25565
@@ -80,35 +80,35 @@ destinationPort = 25565
 
 ---
 
-## 6. Установить утилиту для скачивания модов
+## 6. Install the mod update tool
 
-Скопируйте и отредактируйте конфиг:
+Copy and edit the config:
 
 ```bash
 cp tools/linux/tes3mp-client-update-mods.conf tools/linux/tes3mp-client-update-mods.conf.local
 nano tools/linux/tes3mp-client-update-mods.conf.local
 ```
 
-Укажите пути к вашим файлам:
+Set the paths to your files:
 
 ```
-CLIENT_DEFAULT=/путь/к/tes3mp-client-default.cfg
-DATA_FILES=/путь/к/Data Files/
-OPENMW_CFG=/путь/к/openmw.cfg
+CLIENT_DEFAULT=/path/to/tes3mp-client-default.cfg
+DATA_FILES=/path/to/Data Files/
+OPENMW_CFG=/path/to/openmw.cfg
 ```
 
-Запустите синхронизацию модов:
+Run the sync:
 
 ```bash
 bash tools/linux/tes3mp-client-update-mods
 ```
 
-Скрипт скачает моды с сервера, установит их в `Data Files/` и обновит `openmw.cfg`.
+The script downloads mods from the server, installs them into `Data Files/`, and updates `openmw.cfg`.
 
 ---
 
-## 7. Зайти на сервер
+## 7. Join the server
 
-1. Запустите `tes3mp.exe` через Steam
-2. Введите логин и пароль для регистрации
-3. Готово — вы на сервере!
+1. Launch `tes3mp.exe` through Steam
+2. Enter a username and password to register
+3. Done — you are on the server!

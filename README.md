@@ -2,19 +2,19 @@
 
 Guides and scripts for setting up and managing TES3MP servers and installing the TES3MP client.
 
-## 🎮 Игрок
+## 🎮 Player
 
-[Пошаговый маршрут игрока](PLAYER.md) — от установки клиента до захода на сервер.
+[Step-by-step player guide](PLAYER.md) — from client installation to joining the server.
 
-## 🖥️ Администратор
+## 🖥️ Server admin
 
-[Пошаговый маршрут администратора](ADMIN.md) — от установки сервера до модерации.
+[Step-by-step admin guide](ADMIN.md) — from server setup to moderation.
 
 ---
 
-## Ресурсы
+## Resources
 
-- [TES3MP на GitHub](https://github.com/TES3MP/TES3MP)
-- [OpenMW на GitHub](https://github.com/OpenMW/openmw)
+- [TES3MP on GitHub](https://github.com/TES3MP/TES3MP)
+- [OpenMW on GitHub](https://github.com/OpenMW/openmw)
 
-Благодарности David Cernat за TES3MP и команде OpenMW за то, что сделали Morrowind открытым и кроссплатформенным.
+Thanks to David Cernat for TES3MP and the OpenMW team for making Morrowind open-source and cross-platform.
