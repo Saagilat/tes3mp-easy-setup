@@ -438,9 +438,9 @@ gather_lua_options() {
 # 4. Create folder structure & download files
 # ────────────────────────────────────────────────────────────
 setup_files() {
-    local dest="/opt/tes3mp"
-    mkdir -p "$dest/data" "$dest/data/players" "$dest/data/cells" \
-             "$dest/data/server/data" \
+    local dest="/tes3mp-easy"
+    mkdir -p "$dest/container-data" \
+             "$dest/container-data/server/data" \
              "$dest/plugins" "$dest/server-scripts"
     chown -R root:root "$dest"
 
@@ -461,12 +461,12 @@ setup_files() {
     # Download TES3MP server binary
     local TES3MP_URL="https://github.com/TES3MP/TES3MP/releases/download/tes3mp-0.8.1/tes3mp-server-GNU+Linux-x86_64-release-0.8.1-68954091c5-6da3fdea59.tar.gz"
 
-    if [[ -f "$dest/data/tes3mp-server" ]]; then
+    if [[ -f "$dest/container-data/tes3mp-server" ]]; then
         ok "TES3MP server binary already downloaded"
     else
         info "Downloading TES3MP server (~50 MB)..."
         wget -q --show-progress "$TES3MP_URL" -O /tmp/tes3mp.tar.gz
-        tar --strip-components=1 -xzf /tmp/tes3mp.tar.gz -C "$dest/data/"
+        tar --strip-components=1 -xzf /tmp/tes3mp.tar.gz -C "$dest/container-data/"
         rm -f /tmp/tes3mp.tar.gz
         ok "TES3MP server installed"
     fi
@@ -483,13 +483,13 @@ setup_files() {
         ok "Example mods downloaded"
     fi
 
-    ok "All files installed — configs are in data/, edit them directly on the host"
+    ok "All files installed — configs are in container-data/, edit them directly on the host"
 }
 # ────────────────────────────────────────────────────────────
 # 5. Generate server config from answers
 # ────────────────────────────────────────────────────────────
 write_config() {
-    local dest="/opt/tes3mp/data"
+    local dest="/tes3mp-easy/container-data"
     local cfg="$dest/tes3mp-server-default.cfg"
 
     info "Generating $cfg from your answers..."
@@ -528,7 +528,7 @@ write_config() {
 # 5b. Generate Lua config from answers
 # ────────────────────────────────────────────────────────────
 write_lua_config() {
-    local dest="/opt/tes3mp/data/server/scripts"
+    local dest="/tes3mp-easy/container-data/server/scripts"
     local cfg="$dest/config.lua"
     local marker="-- install.sh config"
 
@@ -605,7 +605,7 @@ write_lua_config() {
 # 6. Configure nginx.conf and docker-compose.yml based on answers
 # ────────────────────────────────────────────────────────────
 configure_endpoints() {
-    local dest="/opt/tes3mp"
+    local dest="/tes3mp-easy"
 
     # docker-compose.yml
     local compose="$dest/docker-compose.yml"
@@ -620,7 +620,7 @@ configure_endpoints() {
         sed -i 's/#\(  ports:\)/  ports:/' "$compose"
         sed -i "s/#\(    - \"8085:80\"\)/    - \"8085:80\"/" "$compose"
         sed -i 's/#\(  volumes:\)/  volumes:/' "$compose"
-        sed -i 's/#\(    - \.\/data:\/usr\/share\/nginx\/html:ro\)/    - .\/data:\/usr\/share\/nginx\/html:ro/' "$compose"
+        sed -i 's/#\(    - \.\/container-data:\/usr\/share\/nginx\/html:ro\)/    - .\/container-data:\/usr\/share\/nginx\/html:ro/' "$compose"
         sed -i 's/#\(    - \.\/nginx.conf:\/etc\/nginx\/conf\.d\/default\.conf:ro\)/    - .\/nginx.conf:\/etc\/nginx\/conf.d\/default.conf:ro/' "$compose"
         sed -i 's/#\(  restart: unless-stopped\)/  restart: unless-stopped/' "$compose"
     fi
@@ -632,10 +632,8 @@ configure_endpoints() {
         sed -i 's/#\(    context: \.\)/    context: ./' "$compose"
         sed -i 's/#\(    dockerfile: export\.dockerfile\)/    dockerfile: export.dockerfile/' "$compose"
         sed -i 's/#\(  volumes:\)/  volumes:/' "$compose"
-        sed -i 's/#\(    - \.\/data\/players:\/mnt\/characters:ro\)/    - .\/data\/players:\/mnt\/characters:ro/' "$compose"
-        sed -i 's/#\(    - \.\/data\/player:\/mnt\/characters:ro\)/    - .\/data\/player:\/mnt\/characters:ro/' "$compose"
-        sed -i 's/#\(    - \.\/data\/cells:\/mnt\/cells:ro\)/    - .\/data\/cells:\/mnt\/cells:ro/' "$compose"
-        sed -i 's/#\(    - \.\/data\/cell:\/mnt\/cells:ro\)/    - .\/data\/cell:\/mnt\/cells:ro/' "$compose"
+        sed -i 's/#\(    - \.\/container-data\/server\/data\/player:\/mnt\/characters:ro\)/    - .\/container-data\/server\/data\/player:\/mnt\/characters:ro/' "$compose"
+        sed -i 's/#\(    - \.\/container-data\/server\/data\/cell:\/mnt\/cells:ro\)/    - .\/container-data\/server\/data\/cell:\/mnt\/cells:ro/' "$compose"
         sed -i 's/#\(  restart: unless-stopped\)/  restart: unless-stopped/' "$compose"
     fi
 
@@ -728,7 +726,7 @@ configure_firewall() {
 # 8. Build Docker image and start
 # ────────────────────────────────────────────────────────────
 build_and_start() {
-    local dest="/opt/tes3mp"
+    local dest="/tes3mp-easy"
     cd "$dest"
 
     info "Building Docker image (this may take a minute)..."
@@ -760,9 +758,8 @@ build_and_start() {
     echo "    /get-mods:           $ENABLE_MODS"
     echo "    /get-server-scripts: $ENABLE_SERVER_SCRIPTS"
     echo "    /get-world:          $ENABLE_WORLD"
-    echo "    /get-characters:     $ENABLE_CHARACTERS"
     echo ""
-    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" || "$ENABLE_CHARACTERS" == "yes" ]]; then
+    if [[ "$ENABLE_MODS" == "yes" || "$ENABLE_SERVER_SCRIPTS" == "yes" || "$ENABLE_WORLD" == "yes" ]]; then
         echo "  HTTP port (endpoints): 8085"
     fi
     echo ""
@@ -776,10 +773,10 @@ build_and_start() {
     echo "  Stop:        docker compose -f $dest/docker-compose.yml down"
     echo "  Restart:     docker compose -f $dest/docker-compose.yml restart"
     echo ""
-    echo "  Config:      nano $dest/data/tes3mp-server-default.cfg"
-    echo "  Lua config:  nano $dest/data/server/scripts/config.lua"
-    echo "  Ban list:    nano $dest/data/server/data/banlist.json"
-    echo "  Required data files: nano $dest/data/requiredDataFiles.json"
+    echo "  Config:      nano $dest/container-data/tes3mp-server-default.cfg"
+    echo "  Lua config:  nano $dest/container-data/server/scripts/config.lua"
+    echo "  Ban list:    nano $dest/container-data/server/data/banlist.json"
+    echo "  Required data files: nano $dest/container-data/server/data/requiredDataFiles.json"
     echo ""
     echo "  After editing any config: docker compose restart"
     echo ""

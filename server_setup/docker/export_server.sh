@@ -1,20 +1,29 @@
 #!/bin/bash
 #
-# export_server.sh — lightweight HTTP server for TES3MP world/character exports
+# export_server.sh — lightweight HTTP server for TES3MP world exports
 #
-# Endpoints:
-#   GET /get-world      — serves a tar.gz of the cells directory
-#   GET /get-characters — serves a tar.gz of the characters directory
+# Endpoint:
+#   GET /get-world — serves a tar.gz of the player/ and cell/ directories
+#                    combined, for full world state recovery
+#
+# Archive structure (players + cells preserved separately):
+#   world_backup.tar.gz
+#   ├── player/
+#   │   ├── AccountName1.json
+#   │   └── AccountName2.json
+#   ├── cell/
+#   │   ├── -1_-2.json
+#   │   └── ...
 #
 # Archives are cached for CACHE_MINUTES minutes to avoid regenerating
 # on every request. The cache is invalidated after the TTL.
 #
 # Environment variables:
-#   CHARACTERS_DIR — path to characters (default: /mnt/characters)
-#   CELLS_DIR     — path to cells       (default: /mnt/cells)
-#   CACHE_DIR     — cache directory     (default: /tmp/export_cache)
-#   CACHE_MINUTES — cache TTL           (default: 10)
-#   PORT          — listen port         (default: 5000)
+#   CHARACTERS_DIR — path to players directory    (default: /mnt/characters)
+#   CELLS_DIR      — path to cells directory      (default: /mnt/cells)
+#   CACHE_DIR      — cache directory              (default: /tmp/export_cache)
+#   CACHE_MINUTES  — cache TTL                    (default: 10)
+#   PORT           — listen port                  (default: 5000)
 #
 # Dependencies: bash, tar, socat
 
@@ -44,10 +53,7 @@ handle_request() {
 
     case "$path" in
         /get-world)
-            serve_archive "$CELLS_DIR" "world_state.tar.gz"
-            ;;
-        /get-characters)
-            serve_archive "$CHARACTERS_DIR" "characters.tar.gz"
+            serve_combined_archive
             ;;
         *)
             echo -ne "HTTP/1.1 404 Not Found\r\n"
@@ -58,9 +64,8 @@ handle_request() {
     esac
 }
 
-serve_archive() {
-    local source_dir="$1"
-    local archive_name="$2"
+serve_combined_archive() {
+    local archive_name="world_state.tar.gz"
     local archive_path="$CACHE_DIR/$archive_name"
 
     # Rebuild if cache is stale or missing
@@ -77,11 +82,24 @@ serve_archive() {
     fi
 
     if [ "$rebuild" -eq 1 ]; then
-        if [ -d "$source_dir" ] && [ -n "$(ls -A "$source_dir" 2>/dev/null)" ]; then
-            tar czf "$archive_path" -C "$source_dir" . 2>/dev/null
-        else
-            tar czf "$archive_path" --files-from /dev/null 2>/dev/null
+        local stage_dir
+        stage_dir=$(mktemp -d)
+
+        # Copy players to staging/player/
+        if [ -d "$CHARACTERS_DIR" ] && [ -n "$(ls -A "$CHARACTERS_DIR" 2>/dev/null)" ]; then
+            mkdir -p "$stage_dir/player"
+            cp -r "$CHARACTERS_DIR"/* "$stage_dir/player/"
         fi
+
+        # Copy cells to staging/cell/
+        if [ -d "$CELLS_DIR" ] && [ -n "$(ls -A "$CELLS_DIR" 2>/dev/null)" ]; then
+            mkdir -p "$stage_dir/cell"
+            cp -r "$CELLS_DIR"/* "$stage_dir/cell/"
+        fi
+
+        # Create the archive preserving player/ and cell/ prefixes
+        tar czf "$archive_path" -C "$stage_dir" . 2>/dev/null
+        rm -rf "$stage_dir"
     fi
 
     if [ ! -f "$archive_path" ]; then

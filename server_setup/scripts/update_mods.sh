@@ -26,7 +26,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DATA_DIR="$SCRIPT_DIR/data"
+DATA_DIR="$SCRIPT_DIR/container-data"
 PLUGINS_DIR="$SCRIPT_DIR/plugins"
 SERVER_SCRIPTS_DIR_LOCAL="$SCRIPT_DIR/server-scripts"
 

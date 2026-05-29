@@ -1,6 +1,6 @@
 # config.lua reference
 
-Full documentation of all settings in `/opt/tes3mp/config/server/scripts/config.lua` (TES3MP 0.8.1).
+Full documentation of all settings in `/tes3mp-easy/container-data/server/scripts/config.lua` (TES3MP 0.8.1).
 
 The **Installer** column shows whether the setting is covered by the interactive install.sh questionnaire.
 

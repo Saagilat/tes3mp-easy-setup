@@ -1,48 +1,48 @@
 # Managing the TES3MP server (Docker)
 
-All commands are run as root on the VPS from /opt/tes3mp.
+All commands are run as root on the VPS from /tes3mp-easy.
 
 | Action | Command | Details |
 |--------|---------|---------|
-| Start | `cd /opt/tes3mp && docker compose up -d` | First run only — builds and starts the container |
-| Restart | `cd /opt/tes3mp && docker compose restart` | Sends SIGTERM to TES3MP; with `stop_grace_period: 30s` the server saves before exit |
-| View live logs | `cd /opt/tes3mp && docker compose logs -f` | |
-| Stop | `cd /opt/tes3mp && docker compose down` | |
-| Edit config | `nano /opt/tes3mp/data/tes3mp-server-default.cfg` | Afterwards, run **Restart** to apply changes |
-| Edit Lua config | `nano /opt/tes3mp/data/server/scripts/config.lua` | Afterwards, run **Restart** to apply changes |
-| Edit ban list | `nano /opt/tes3mp/data/server/data/banlist.json` | Afterwards, run **Restart** to apply changes |
-| Sync plugins & scripts | `bash /opt/tes3mp/update_mods.sh` | Copies files from `plugins/` and `server-scripts/` to the server data directories |
+| Start | `cd /tes3mp-easy && docker compose up -d` | First run only — builds and starts the container |
+| Restart | `cd /tes3mp-easy && docker compose restart` | Sends SIGTERM to TES3MP; with `stop_grace_period: 30s` the server saves before exit |
+| View live logs | `cd /tes3mp-easy && docker compose logs -f` | |
+| Stop | `cd /tes3mp-easy && docker compose down` | |
+| Edit config | `nano /tes3mp-easy/container-data/tes3mp-server-default.cfg` | Afterwards, run **Restart** to apply changes |
+| Edit Lua config | `nano /tes3mp-easy/container-data/server/scripts/config.lua` | Afterwards, run **Restart** to apply changes |
+| Edit ban list | `nano /tes3mp-easy/container-data/server/data/banlist.json` | Afterwards, run **Restart** to apply changes |
+| Sync plugins & scripts | `bash /tes3mp-easy/update_mods.sh` | Copies files from `plugins/` and `server-scripts/` to the server data directories |
 
-## Configuration (direct access via data/)
+## Configuration (direct access via container-data/)
 
-All config files are stored in the `data/` directory on the host, which is bind-mounted into the container at `/tes3mp`. Edit them with any text editor and run **`docker compose restart`** for changes to take effect.
+All config files are stored in the `container-data/` directory on the host, which is bind-mounted into the container at `/tes3mp`. Edit them with any text editor and run **`docker compose restart`** for changes to take effect.
 
 | Host path | Container path |
 |-----------|----------------|
-| `/opt/tes3mp/data/tes3mp-server-default.cfg` | `/tes3mp/tes3mp-server-default.cfg` |
-| `/opt/tes3mp/data/server/scripts/config.lua` | `/tes3mp/server/scripts/config.lua` |
-| `/opt/tes3mp/data/server/data/banlist.json` | `/tes3mp/server/data/banlist.json` |
-| `/opt/tes3mp/data/requiredDataFiles.json` | `/tes3mp/server/data/requiredDataFiles.json` |
+| `/tes3mp-easy/container-data/tes3mp-server-default.cfg` | `/tes3mp/tes3mp-server-default.cfg` |
+| `/tes3mp-easy/container-data/server/scripts/config.lua` | `/tes3mp/server/scripts/config.lua` |
+| `/tes3mp-easy/container-data/server/data/banlist.json` | `/tes3mp/server/data/banlist.json` |
+| `/tes3mp-easy/container-data/server/data/requiredDataFiles.json` | `/tes3mp/server/data/requiredDataFiles.json` |
 
 After editing any config file, run:
 
 ```bash
-cd /opt/tes3mp && docker compose restart
+cd /tes3mp-easy && docker compose restart
 ```
 
 > **Note:** Config bind mounts are read-only inside the container. To make persistent changes, edit the host files. If you delete a config file from the host, the container will use the defaults bundled in the image.
 
 ## Data persistence
 
-Player progress (characters, inventory, cells) is stored in bind mounts on the host filesystem:
+Player progress (characters, inventory, cells) is stored in bind mounts on the host filesystem.
+Host paths mirror the container structure exactly — the `container-data/` directory is a live copy of `/tes3mp/` inside the container.
 
 | Inside container | On host |
 |-----------------|---------|
-| `/tes3mp/server/data/player/` | `/opt/tes3mp/data/players/` |
-| `/tes3mp/server/data/cell/` | `/opt/tes3mp/data/cells/` |
-| `/tes3mp/data/` (mods & assets) | `/opt/tes3mp/data/` |
+| `/tes3mp/server/data/player/` | `/tes3mp-easy/container-data/server/data/player/` |
+| `/tes3mp/server/data/cell/` | `/tes3mp-easy/container-data/server/data/cell/` |
 
-Why `/tes3mp/server/data/player` and not `/tes3mp/players`? Because TES3MP's config sets `home = ./server`, and by default it writes player data to `./data/player` relative to that home directory. The bind mounts mirror exactly where TES3MP writes.
+Why `/tes3mp/server/data/player`? Because TES3MP's config sets `home = ./server`, and by default it writes player data to `./data/player` relative to that home directory. The bind mount mirrors exactly where TES3MP writes.
 
 Unlike named volumes, bind mounts are never automatically removed by Docker — data survives rebuilds, container crashes, and even `docker compose down -v`.
 
@@ -73,7 +73,7 @@ The auto-save interval (`config.autoSaveInterval` in `config.lua`) is your safet
 Все команды выполняются в игровом чате. PID игрока можно узнать через `/players` или `/list`.
 
 | Команда | Требуется ранг | Действие |
-|---------|----------------|----------|
+|---------|----------------|---------|
 | `/addadmin <pid>` | ServerOwner (3) | Назначить игрока администратором (staffRank = 2) |
 | `/removeadmin <pid>` | ServerOwner (3) | Понизить администратора до модератора (staffRank = 1) |
 | `/addmoderator <pid>` | Admin (2+) | Назначить игрока модератором (staffRank = 1) |
@@ -87,11 +87,11 @@ The auto-save interval (`config.autoSaveInterval` in `config.lua`) is your safet
 
 1. Остановите сервер:
    ```bash
-   cd /opt/tes3mp && docker compose down
+   cd /tes3mp-easy && docker compose down
    ```
 2. Откройте JSON-файл игрока:
    ```bash
-   nano /opt/tes3mp/data/players/<accountName>.json
+   nano /tes3mp-easy/container-data/server/data/player/<accountName>.json
    ```
 3. Найдите секцию `settings` и измените поле `staffRank`:
    ```json
@@ -103,7 +103,7 @@ The auto-save interval (`config.autoSaveInterval` in `config.lua`) is your safet
    Значения: `0` — обычный игрок, `1` — модератор, `2` — администратор, `3` — владелец сервера.
 4. Сохраните файл и запустите сервер:
    ```bash
-   cd /opt/tes3mp && docker compose up -d
+   cd /tes3mp-easy && docker compose up -d
    ```
 
 ## Plugin and script management
@@ -130,18 +130,18 @@ bash tools/linux/tes3mp-server-update-mods
 Run this on the server after placing files in `plugins/` and `server-scripts/`:
 
 ```bash
-bash /opt/tes3mp/update_mods.sh
+bash /tes3mp-easy/update_mods.sh
 ```
 
 The script:
-* Removes old plugins from `server/data/` (keeping original files: `Morrowind.esm`,
+* Removes old plugins from `container-data/server/data/` (keeping original files: `Morrowind.esm`,
   `Tribunal.esm`, `Bloodmoon.esm`)
-* Copies all plugins from `plugins/` to `server/data/`
-* Synchronises `.lua` scripts from `server-scripts/` to `server/scripts/custom/`
+* Copies all plugins from `plugins/` to `container-data/server/data/`
+* Synchronises `.lua` scripts from `server-scripts/` to `container-data/server/scripts/custom/`
   (removes files that no longer exist)
-* Generates `server/scripts/customScripts.lua` with `require()` for each script
-* Computes CRC32 and generates `server/data/requiredDataFiles.json`
-* Creates `mods.zip` for the `/get-mods` endpoint (includes plugins and `requiredDataFiles.json`)
+* Generates `container-data/server/scripts/customScripts.lua` with `require()` for each script
+* Computes CRC32 and generates `container-data/server/data/requiredDataFiles.json`
+* Creates `container-data/mods.zip` for the `/get-mods` endpoint (includes plugins and `requiredDataFiles.json`)
 * Restarts the Docker container automatically
 
 ## Enabling HTTP endpoints
@@ -151,21 +151,20 @@ All endpoints are disabled by default. See [tes3mp_settings.md](tes3mp_settings.
 
 ### Available endpoints
 
-| Endpoint | Description | File |
-|----------|-------------|------|
-| `/get-mods` | Download all server mods | `mods.zip` |
-| `/get-server-scripts` | Download all custom Lua server scripts | `server-scripts.zip` |
-| `/get-world` | Download world state (all cell JSON files) | `world_state.tar.gz` |
-| `/get-characters` | Download all character data | `characters.tar.gz` |
+| Endpoint | Description | Backend |
+|----------|-------------|---------|
+| `/get-mods` | Download all server mods | nginx (static file: `container-data/mods.zip`) |
+| `/get-server-scripts` | Download all custom Lua server scripts | nginx (static file: `container-data/server-scripts.zip`) |
+| `/get-world` | Download players + cells combined for world recovery | export service (`container-data/server/data/player/` + `container-data/server/data/cell/`) |
 
 ### To enable
 
-1. **Uncomment the desired location blocks** in `/opt/tes3mp/nginx.conf`.
-2. For `/get-world` and `/get-characters` you also need to **uncomment the `export` service** in `/opt/tes3mp/docker-compose.yml`.
+1. **Uncomment the desired location blocks** in `/tes3mp-easy/nginx.conf`.
+2. For `/get-world` you also need to **uncomment the `export` service** in `/tes3mp-easy/docker-compose.yml`.
 3. Uncomment the **`nginx` service** in docker-compose.yml (required for all endpoints).
 4. Start the container:
    ```bash
-   cd /opt/tes3mp && docker compose up -d
+   cd /tes3mp-easy && docker compose up -d
    ```
 
 ### Notes
@@ -175,4 +174,8 @@ All endpoints are disabled by default. See [tes3mp_settings.md](tes3mp_settings.
   - `http://<server-IP>:8085/get-mods`
   - `http://<server-IP>:8085/get-server-scripts`
   - `http://<server-IP>:8085/get-world`
-  - `http://<server-IP>:8085/get-characters`
+- `/get-world` archive structure (extracts directly into `container-data/`):
+  ```
+  world_state.tar.gz
+  ├── player/
+  └── cell/
