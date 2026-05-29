@@ -61,8 +61,8 @@ destinationPort = 25565
 Copy and edit the config:
 
 ```bash
-cp tools/linux/tes3mp-client-update-mods.conf tools/linux/tes3mp-client-update-mods.conf.local
-nano tools/linux/tes3mp-client-update-mods.conf.local
+cp tools/linux/tes3mp-easy-client-update-mods.conf tools/linux/tes3mp-easy-client-update-mods.conf.local
+nano tools/linux/tes3mp-easy-client-update-mods.conf.local
 ```
 
 Set the paths to your files:
@@ -76,7 +76,7 @@ OPENMW_CFG=/path/to/openmw.cfg
 Run the sync:
 
 ```bash
-bash tools/linux/tes3mp-client-update-mods
+bash tools/linux/tes3mp-easy-client-update-mods
 ```
 
 The script downloads mods from the server, installs them into `Data Files/`, and updates `openmw.cfg`.
