@@ -446,8 +446,19 @@ setup_files() {
     # Download management reference
     wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy/master/docs/admin/management.md" -O "$dest/management.md"
 
-    # Download TES3MP server binary
-    local TES3MP_URL="https://github.com/TES3MP/TES3MP/releases/download/tes3mp-0.8.1/tes3mp-server-GNU+Linux-x86_64-release-0.8.1-68954091c5-6da3fdea59.tar.gz"
+    # Download TES3MP version file and extract URL
+    local TES3MP_URL=""
+    local version_url="https://raw.githubusercontent.com/Saagilat/tes3mp-easy/master/server_setup/tes3mp-version.txt"
+    local version_file=$(mktemp)
+    if wget -q --show-progress "$version_url" -O "$version_file" 2>/dev/null; then
+        TES3MP_URL=$(grep '^TES3MP_URL=' "$version_file" | head -1 | cut -d= -f2-)
+    fi
+    rm -f "$version_file"
+
+    if [ -z "$TES3MP_URL" ]; then
+        err "Failed to read TES3MP_URL from $version_url"
+        exit 1
+    fi
 
     if [[ -f "$dest/container-data/tes3mp-server" ]]; then
         ok "TES3MP server binary already downloaded"
