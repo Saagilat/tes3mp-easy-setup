@@ -185,7 +185,7 @@ package_mods_and_scripts() {
                 basename="$(basename "$file")"
 
                 # Skip original files
-                local skip=0
+                skip=0
                 for orig in "${ORIGINAL_FILES[@]}"; do
                     if [ "${basename,,}" = "${orig,,}" ]; then
                         skip=1
@@ -264,12 +264,17 @@ package_players() {
     trap 'rm -rf "${stage_dir:-}"' RETURN
 
     # Copy players to staging/player/
-    if [ -d "$PLAYER_DIR" ] && [ -n "$(ls -A "$PLAYER_DIR" 2>/dev/null)" ]; then
-        mkdir -p "$stage_dir/player"
-        cp -r "$PLAYER_DIR"/* "$stage_dir/player/"
-        echo "[package.sh]   players: $(ls -1 "$stage_dir/player" | wc -l)"
+    mkdir -p "$stage_dir/player"
+    if [ -d "$PLAYER_DIR" ]; then
+        local count=0
+        for f in "$PLAYER_DIR"/*; do
+            [ -e "$f" ] || continue
+            cp -r "$f" "$stage_dir/player/"
+            ((count++)) || true
+        done
+        echo "[package.sh]   players: $count"
     else
-        echo "[package.sh]   players: 0 (empty or missing)"
+        echo "[package.sh]   players: 0 (directory missing)"
     fi
 
     # Create the archive
@@ -300,12 +305,17 @@ package_cells() {
     trap 'rm -rf "${stage_dir:-}"' RETURN
 
     # Copy cells to staging/cell/
-    if [ -d "$CELL_DIR" ] && [ -n "$(ls -A "$CELL_DIR" 2>/dev/null)" ]; then
-        mkdir -p "$stage_dir/cell"
-        cp -r "$CELL_DIR"/* "$stage_dir/cell/"
-        echo "[package.sh]   cells: $(ls -1 "$stage_dir/cell" | wc -l)"
+    mkdir -p "$stage_dir/cell"
+    if [ -d "$CELL_DIR" ]; then
+        local count=0
+        for f in "$CELL_DIR"/*; do
+            [ -e "$f" ] || continue
+            cp -r "$f" "$stage_dir/cell/"
+            ((count++)) || true
+        done
+        echo "[package.sh]   cells: $count"
     else
-        echo "[package.sh]   cells: 0 (empty or missing)"
+        echo "[package.sh]   cells: 0 (directory missing)"
     fi
 
     # Create the archive
