@@ -428,7 +428,8 @@ setup_files() {
     local dest="/tes3mp-easy"
     mkdir -p "$dest/container-data" \
              "$dest/container-data/server/data" \
-             "$dest/plugins" "$dest/server-scripts"
+             "$dest/plugins" "$dest/server-scripts" \
+             "$dest/scripts"
     chown -R root:root "$dest"
 
     cd "$dest"
@@ -438,9 +439,9 @@ setup_files() {
         wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy/master/server_setup/docker/$f" -O "$dest/$f"
     done
     for f in package.sh import_mods.sh import_players.sh import_cells.sh; do
-        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy/master/server_setup/scripts/$f" -O "$dest/$f"
+        wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy/master/server_setup/scripts/$f" -O "$dest/scripts/$f"
     done
-    chmod +x "$dest/import_mods.sh" "$dest/import_players.sh" "$dest/import_cells.sh"
+    chmod +x "$dest/scripts/import_mods.sh" "$dest/scripts/import_players.sh" "$dest/scripts/import_cells.sh"
 
     # Download management reference
     wget -q --show-progress "https://raw.githubusercontent.com/Saagilat/tes3mp-easy/master/docs/admin/management.md" -O "$dest/management.md"
@@ -770,7 +771,7 @@ build_and_start() {
     done
 
     # Generate requiredDataFiles.json with CRC32 via rhash
-    source "$dest/package.sh"
+    source "$dest/scripts/package.sh"
     export ORIGINAL_FILES=("Morrowind.esm" "Tribunal.esm" "Bloodmoon.esm")
     export PLUGINS_DIR="$dest/plugins"
     export SERVER_SCRIPTS_DIR="$dest/server-scripts"
@@ -822,7 +823,7 @@ build_and_start() {
     echo ""
     echo "  After editing any config: docker compose restart"
     echo ""
-    echo "  To import mods and scripts: bash $dest/import_mods.sh"
+    echo "  To import mods and scripts: bash $dest/scripts/import_mods.sh"
     echo "  Place server scripts in: server-scripts/"
     echo ""
 }
