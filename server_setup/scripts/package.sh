@@ -73,9 +73,13 @@ _generate_required_json() {
     shift
     local orig_files=("$@")
 
-    printf "[\n"
+    local all_entries=()
+    local tmp
+
+    # Add original files with empty CRC
     for orig in "${orig_files[@]}"; do
-        printf '  {\n    "%s": []\n  },\n' "$orig"
+        tmp=$(printf '  {\n    "%s": []\n  }' "$orig")
+        all_entries+=("$tmp")
     done
 
     # Collect and sort mod files
@@ -89,7 +93,7 @@ _generate_required_json() {
             local basename
             basename="$(basename "$file")"
 
-            local skip=0
+            skip=0
             for orig in "${orig_files[@]}"; do
                 if [ "$basename" = "$orig" ]; then
                     skip=1
@@ -115,11 +119,24 @@ _generate_required_json() {
             crc=$(rhash --crc32 --simple "$filepath" | cut -d' ' -f1 | tr '[:lower:]' '[:upper:]')
         fi
         if [ -n "$crc" ]; then
-            printf '  {\n    "%s": ["0x%s"]\n  },\n' "$basename" "$crc"
+            tmp=$(printf '  {\n    "%s": ["0x%s"]\n  }' "$basename" "$crc")
         else
-            printf '  {\n    "%s": []\n  },\n' "$basename"
+            tmp=$(printf '  {\n    "%s": []\n  }' "$basename")
         fi
+        all_entries+=("$tmp")
     done
+
+    # Print all entries with comma separators in proper JSON
+    printf "[\n"
+    local i=0
+    for entry in "${all_entries[@]}"; do
+        if [ "$i" -gt 0 ]; then
+            printf ",\n"
+        fi
+        printf "%s" "$entry"
+        ((i++)) || true
+    done
+    printf "\n]\n"
 }
 
 # ────────────────────────────────────────────────────────────────
